@@ -4,18 +4,18 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
-class VerificationCode implements Rule
+class ExcludeThisPhone implements Rule
 {
-    protected $verification_code;
-    
+    protected $number;
+
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    public function __construct($verification_code)
+    public function __construct($number)
     {
-        $this->verification_code = $verification_code;
+        $this->number = $number;
     }
 
     /**
@@ -27,7 +27,8 @@ class VerificationCode implements Rule
      */
     public function passes($attribute, $value)
     {
-        return $this->verification_code == $value;
+        $value = preg_replace('/\D+/', '', $value);
+        return $this->number != $value;
     }
 
     /**
@@ -37,6 +38,6 @@ class VerificationCode implements Rule
      */
     public function message()
     {
-        return 'The verification code is incorrect.';
+        return 'You cannot invite yourself.';
     }
 }

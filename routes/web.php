@@ -7,13 +7,18 @@ use Laravel\Fortify\Http\Controllers\ConfirmablePasswordController;
 use Laravel\Fortify\Http\Controllers\ConfirmedPasswordStatusController;
 use App\Http\Controllers\PhoneVerificationNotificationController;
 use App\Http\Controllers\PhoneVerificationPromptController;
-use Laravel\Fortify\Http\Controllers\NewPasswordController;
+use App\Http\Controllers\NewPasswordController;
 use Laravel\Fortify\Http\Controllers\PasswordController;
-use Laravel\Fortify\Http\Controllers\PasswordResetLinkController;
+use App\Http\Controllers\PasswordResetLinkController;
 use Laravel\Fortify\Http\Controllers\ProfileInformationController;
 use Laravel\Fortify\Http\Controllers\RecoveryCodeController;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
 use Laravel\Fortify\Http\Controllers\VerifyEmailController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\InviteController;
+use App\Http\Controllers\ContactController;
+use Inertia\Inertia;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -25,13 +30,42 @@ use Laravel\Fortify\Http\Controllers\VerifyEmailController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::group(['middleware' => ['auth', 'verified']], function () {
+    Route::get('/', [EventController::class, 'index'])
+        ->name('home');
+
+    Route::get('/event/create', [EventController::class, 'create'])
+        ->name('event.create');
+
+    Route::post('/event/store', [EventController::class, 'store'])
+        ->name('event.store');
+
+    Route::get('/event/edit/{event}', [EventController::class, 'edit'])
+        ->name('event.edit');
+
+    Route::put('/event/edit/{event}/update', [EventController::class, 'update'])
+        ->name('event.update');
+
+    Route::delete('/event/edit/{event}/delete', [EventController::class, 'delete'])
+        ->name('event.delete');
+
+    Route::post('/event/edit/{event}/invite', [InviteController::class, 'send'])
+        ->name('event.invite.send');
+
+    Route::put('/event/edit/{event}/invite/{invite}/update', [InviteController::class, 'update'])
+        ->name('event.invite.update');
+
+    Route::delete('/event/edit/{event}/invite/{invite}/delete', [InviteController::class, 'delete'])
+        ->name('event.invite.delete');
+
+    Route::get('/contacts/search', [ContactController::class, 'search'])
+        ->name('contacts.search');
+
+    
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return Inertia\Inertia::render('Dashboard');
-})->name('dashboard');
+Route::get('/event/view/{event}/{invite}', [EventController::class, 'show'])
+        ->name('event.view');
 
 Route::group(['middleware' => config('fortify.middleware', ['web'])], function () {
     // Authentication...
@@ -95,7 +129,7 @@ Route::group(['middleware' => config('fortify.middleware', ['web'])], function (
     // Profile Information...
     if (Features::enabled(Features::updateProfileInformation())) {
         Route::put('/user/profile-information', [ProfileInformationController::class, 'update'])
-            ->middleware(['auth'])
+            ->middleware(['auth']) 
             ->name('user-profile-information.update');
     }
 

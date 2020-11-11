@@ -12,6 +12,14 @@
             </div>
         @endif
 
+        <h2 class="text-center text-2xl leading-9 font-extrabold text-gray-900">Login to your account</h2>
+        <p class="text-center text-sm leading-5 text-gray-600">
+            Or
+            <a href="{{ route('register') }}" class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">
+              register with your phone number
+            </a>
+        </p>
+
         <form method="POST" action="{{ route('login') }}">
             @csrf
 

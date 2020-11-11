@@ -9,6 +9,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\VerifyPhone;
+use App\Notifications\ResetPassword;
 
 class User extends Authenticatable
 {
@@ -60,6 +61,14 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+    public function events() {
+        return $this->hasMany('App\Models\Event');
+    }
+
+    public function contacts() {
+        return $this->hasMany('App\Models\Contact');
+    }
+
     /**
      * Determine if the user has verified their phone number.
      *
@@ -67,7 +76,7 @@ class User extends Authenticatable
      */
     public function hasVerifiedPhone()
     {
-        return ! is_null($this->phone_verified_at);
+        return !is_null($this->phone_verified_at);
     }
 
     /**
@@ -101,6 +110,27 @@ class User extends Authenticatable
     public function getPhoneForVerification()
     {
         return $this->phone;
+    }
+
+    /**
+     * Get the phone number where password reset links are sent.
+     *
+     * @return string
+     */
+    public function getPhoneForPasswordReset()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPassword($token));
     }
 
     public function routeNotificationForTwilio() 

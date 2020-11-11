@@ -6,6 +6,14 @@
 
         <x-jet-validation-errors class="mb-4" />
 
+        <h2 class="text-center text-2xl leading-9 font-extrabold text-gray-900">Register new account</h2>
+        <p class="text-center text-sm leading-5 text-gray-600">
+            Already have an account?
+            <a href="{{ route('login') }}" class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">
+              Login here
+            </a>
+        </p>
+
         <form method="POST" action="{{ route('register') }}">
             @csrf
 

@@ -5,7 +5,7 @@
         </template>
 
         <template #description>
-            Update your account's profile information and email address.
+            Update your account's profile information and phone number.
         </template>
 
         <template #form>
@@ -48,11 +48,11 @@
                 <jet-input-error :message="form.error('name')" class="mt-2" />
             </div>
 
-            <!-- Email -->
+            <!-- Phone -->
             <div class="col-span-6 sm:col-span-4">
-                <jet-label for="email" value="Email" />
-                <jet-input id="email" type="email" class="mt-1 block w-full" v-model="form.email" />
-                <jet-input-error :message="form.error('email')" class="mt-2" />
+                <jet-label for="phone" value="Phone" />
+                <jet-input id="phone" type="tel" class="mt-1 block w-full" v-model="form.phone" @input="acceptNumber" />
+                <jet-input-error :message="form.error('phone')" class="mt-2" />
             </div>
         </template>
 
@@ -89,13 +89,16 @@
         },
 
         props: ['user'],
+        mounted() {
+            this.acceptNumber();
+        },
 
         data() {
             return {
                 form: this.$inertia.form({
                     '_method': 'PUT',
                     name: this.user.name,
-                    email: this.user.email,
+                    phone: this.user.phone,
                     photo: null,
                 }, {
                     bag: 'updateProfileInformation',
@@ -137,6 +140,12 @@
                 }).then(() => {
                     this.photoPreview = null
                 });
+            },
+
+            acceptNumber(event) {
+                var x = this.form.phone.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+                this.form.phone = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+                this.$forceUpdate();
             },
         },
     }
