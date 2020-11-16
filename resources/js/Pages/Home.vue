@@ -24,64 +24,64 @@
 			      		<div class="bg-white divide-y divide-gray-200">
 
 				      		<inertia-link v-for="event in events" v-bind:key="event.id" :href="route('event.edit', event)" class="block">
-							      <div class="px-6 py-4" href="#">
-								      <div class="flex flex-wrap overflow-hidden">
-								      	<div class="flex items-center">
-								          <div class="flex overflow-hidden">
-													  <img class="inline-block h-6 w-6 rounded-full text-white shadow-solid" :src="$page.user.profile_photo_url" :alt="$page.user.name">
-													  <img class="-ml-1 inline-block h-6 w-6 rounded-full text-white shadow-solid" :src="$page.user.profile_photo_url" :alt="$page.user.name">
-													  <img class="-ml-1 inline-block h-6 w-6 rounded-full text-white shadow-solid" :src="$page.user.profile_photo_url" :alt="$page.user.name">
-													  <img class="-ml-1 inline-block h-6 w-6 rounded-full text-white shadow-solid" :src="$page.user.profile_photo_url" :alt="$page.user.name">
-													</div>
-								          <div class="ml-4">
-								            <div class="text-sm leading-5 font-medium text-gray-900">
-								              {{ event.name }}
-								            </div>
-								            <div class="text-sm leading-5 text-gray-500">
-								              {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }}
-								            </div>
-								          </div>
-								        </div>
+				      			<div class="flex justify-between active:bg-gray-100">
+							      	<div class="pl-6 py-4">
+								      	<div class="flex flex-wrap overflow-hidden">
+									      	<div class="flex items-center">
+									          <div class="">
+									            <div class="text-sm leading-5 font-medium text-gray-900">
+									              {{ event.name }}
+									            </div>
+									            <div class="text-sm leading-5 text-gray-500">
+									              {{ dayjs(event.start_date).format('MMMM D, YYYY [at] h:mma') }}
+									            </div>
+									          </div>
+									        </div>
+									      </div>
 								      </div>
+								      <div class="my-auto">
+									      <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+													<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+												</svg>
+									    </div>
 								    </div>
 								  </inertia-link>
 								  <div v-if="!events.length" class="flex-shrink-0">
-								  	<div class="text-sm p-2 pl-4 font-medium text-gray-900">
+								  	<div class="text-sm p-2 pl-6 font-medium text-gray-900">
 								  		You have no events. Create one now!
 								  	</div>
 									</div> 
 								</div>
 
-								<div class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">My Invitations</div>
-			      		<div class="bg-white divide-y divide-gray-200">
+								<div v-if="invites.length" class="px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">My Invitations</div>
+			      		<div v-if="invites.length" class="bg-white divide-y divide-gray-200">
 
-				      		<inertia-link v-for="invite in invites" v-bind:key="invite.id" :href="route('event.view', event)" class="block">
-							      <div class="px-6 py-4" href="#">
-								      <div class="flex flex-wrap overflow-hidden">
-								      	<div class="flex items-center">
-								          <div class="flex overflow-hidden">
-													  <img class="inline-block h-6 w-6 rounded-full text-white shadow-solid" :src="$page.user.profile_photo_url" :alt="$page.user.name">
-													  <img class="-ml-1 inline-block h-6 w-6 rounded-full text-white shadow-solid" :src="$page.user.profile_photo_url" :alt="$page.user.name">
-													  <img class="-ml-1 inline-block h-6 w-6 rounded-full text-white shadow-solid" :src="$page.user.profile_photo_url" :alt="$page.user.name">
-													  <img class="-ml-1 inline-block h-6 w-6 rounded-full text-white shadow-solid" :src="$page.user.profile_photo_url" :alt="$page.user.name">
-													</div>
-								          <div class="ml-4">
-								            <div class="text-sm leading-5 font-medium text-gray-900">
-								              {{ event.name }}
-								            </div>
-								            <div class="text-sm leading-5 text-gray-500">
-								              {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }}
-								            </div>
-								          </div>
-								        </div>
-								      </div>
-								    </div>
+				      		<inertia-link v-for="invite in invites" v-bind:key="invite.id" :href="route('event.view', invite.event)" class="block">
+				      			<div class="flex justify-between active:bg-gray-100">
+								      <div class="pl-6 py-4">
+									      <div class="flex flex-wrap overflow-hidden">
+									      	<div class="flex items-center">
+									          <div class="flex-shrink-0 h-10 w-10">
+	                    				<img class="h-10 w-10 rounded-full" :src="invite.event.user.profile_photo_url" :alt="invite.event.user.name">
+	                  				</div>
+									          <div class="ml-4">
+									            <div class="text-sm leading-5 font-medium text-gray-900">
+									              {{ invite.event.name }}
+									            </div>
+									            <div class="text-sm leading-5 text-gray-500">
+									              {{ dayjs(invite.event.start_date).format('MMMM D, YYYY [at] h:mma') }}
+									            </div>
+									          </div>
+									        </div>
+									      </div>
+									    </div>
+									    <div class="my-auto">
+									      <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+													<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+												</svg>
+									    </div>
+									  </div>
 								  </inertia-link>
-								  <div v-if="!events.length" class="flex-shrink-0">
-								  	<div class="text-sm p-2 pl-4 font-medium text-gray-900">
-								  		You have no events. Create one now!
-								  	</div>
-									</div> 
 								</div>
 
 					  	</div>
@@ -99,12 +99,13 @@
 
   export default {
     components: {
-        AppLayout,
-        JetButtonLink,
+      AppLayout,
+      JetButtonLink,
     },
 
     props: {
     	events: Array,
+    	invites: Array,
     },
 
     data: function() {
@@ -114,8 +115,8 @@
     },
 
     beforeMount() {
-    	var customParseFormat = require('dayjs/plugin/customParseFormat');
-			this.dayjs.extend(customParseFormat);
+    	//var customParseFormat = require('dayjs/plugin/customParseFormat');
+		//this.dayjs.extend(customParseFormat);
     },
 
   }

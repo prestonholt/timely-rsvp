@@ -19,6 +19,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      */
     public function update($user, array $input)
     {
+        $input['phone'] = preg_replace('/\D+/', '', $input['phone']);
+
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', Rule::unique('users')->ignore($user->id), new PhoneNumber],
@@ -34,7 +36,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         } else {
             $user->forceFill([
                 'name' => $input['name'],
-                'phone' => preg_replace('/\D+/', '', $input['phone']),
+                'phone' => $input['phone'],
             ])->save();
         }
     }
@@ -48,9 +50,11 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      */
     protected function updateVerifiedUser($user, array $input)
     {
+        $input['phone'] = preg_replace('/\D+/', '', $input['phone']);
+
         $user->forceFill([
             'name' => $input['name'],
-            'phone' => preg_replace('/\D+/', '', $input['phone']),
+            'phone' => $input['phone'],
             'phone_verified_at' => null,
         ])->save();
 

@@ -10,6 +10,8 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\VerifyPhone;
 use App\Notifications\ResetPassword;
+use App\Models\Invite;
+use App\Models\Event;
 
 class User extends Authenticatable
 {
@@ -41,6 +43,9 @@ class User extends Authenticatable
         'remember_token',
         'two_factor_recovery_codes',
         'two_factor_secret',
+        'created_at',
+        'updated_at',
+        'phone_verified_at'
     ];
 
     /**
@@ -67,6 +72,34 @@ class User extends Authenticatable
 
     public function contacts() {
         return $this->hasMany('App\Models\Contact');
+    }
+
+    public function invites() {
+        $invites = [];
+
+        // Find where current user phone number has been added as a contact to other users
+        $contacts = Contact::where('phone', $this->phone)->pluck('id');
+        $invites = Invite::whereIn('contact_id', $contacts)->where(function ($query) {
+            $query->where('expiration', '>=', date("Y-m-d H:i:s"))->orWhere('accepted', true);
+        })->with(['event', 'event.user'])->get()->sortByDesc('event.start_date')->values();
+
+        return $invites;
+    }
+
+    public function hasBeenInvitedTo(Event $event) {
+        foreach ($event->invites()->with('contact')->get() as $invite)
+            if ($invite->contact->phone == $this->phone)
+                return true;
+
+        return false;
+    }
+
+    /**
+     * Get the user's links.
+     */
+    public function shortUrls()
+    {
+        return $this->morphMany('App\Models\ShortUrl', 'linkable');
     }
 
     /**

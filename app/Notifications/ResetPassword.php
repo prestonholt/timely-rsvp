@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Twilio\TwilioChannel;
 use NotificationChannels\Twilio\TwilioSmsMessage;
+use App\Models\ShortUrl;
 
 class ResetPassword extends Notification
 {
@@ -84,15 +85,14 @@ class ResetPassword extends Notification
             ], false));
         }
 
-       /*return (new MailMessage)
-            ->subject(Lang::get('Reset Password Notification'))
-            ->line(Lang::get('You are receiving this email because we received a password reset request for your account.'))
-            ->action(Lang::get('Reset Password'), $url)
-            ->line(Lang::get('This password reset link will expire in :count minutes.', ['count' => config('auth.passwords.'.config('auth.defaults.passwords').'.expire')]))
-            ->line(Lang::get('If you did not request a password reset, no further action is required.'));*/
+        $shortUrl = new ShortUrl;
+        $shortUrl->linkable()->associate($notifiable);
+        $shortUrl->destination = $url;
+        $shortUrl->save();
+        $shortUrl->refresh();
 
         return (new TwilioSmsMessage())
-            ->content('TimelyRSVP password reset link: ' . $url);
+            ->content('TimelyRSVP password reset link: ' . $shortUrl->textableUrl());
     }
 
     /**

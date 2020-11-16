@@ -11,6 +11,9 @@ use Laravel\Fortify\Fortify;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -45,6 +48,40 @@ class FortifyServiceProvider extends ServiceProvider
                 Hash::check($request->password, $user->password)) {
                 return $user;
             }
+        });
+
+        Fortify::loginView(function () {
+            return Inertia::render('Auth/Login', [
+                'canResetPassword' => Route::has('password.request'),
+                'status' => session('status'),
+            ]);
+        });
+
+        Fortify::requestPasswordResetLinkView(function () {
+            return Inertia::render('Auth/ForgotPassword', [
+                'status' => session('status'),
+            ]);
+        });
+
+        Fortify::resetPasswordView(function (Request $request) {
+            return Inertia::render('Auth/ResetPassword', [
+                'phone' => $request->input('phone'),
+                'token' => $request->route('token'),
+            ]);
+        });
+
+        Fortify::registerView(function () {
+            return Inertia::render('Auth/Register');
+        });
+
+        Fortify::verifyEmailView(function () {
+            return Inertia::render('Auth/VerifyEmail', [
+                'status' => session('status'),
+            ]);
+        });
+
+        Fortify::twoFactorChallengeView(function () {
+            return Inertia::render('Auth/TwoFactorChallenge');
         });
     }
 }

@@ -20,6 +20,8 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input)
     {
+        $input['phone'] = preg_replace('/\D+/', '', $input['phone']);
+
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'unique:users', new PhoneNumber],
@@ -28,7 +30,7 @@ class CreateNewUser implements CreatesNewUsers
 
         return User::create([
             'name' => $input['name'],
-            'phone' => preg_replace('/\D+/', '', $input['phone']),
+            'phone' => $input['phone']),
             'password' => Hash::make($input['password']),
         ]);
     }

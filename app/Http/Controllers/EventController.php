@@ -7,17 +7,13 @@ use Inertia\Inertia;
 use App\Models\Event;
 use App\Models\Invite;
 use Illuminate\Support\Facades\Validator;
-
-//use Illuminate\Support\Facades\URL;
-
+use App\Models\ShortUrl;
+use Illuminate\Support\Carbon;
 
 class EventController extends Controller
 {
-
     public function __construct() {
-        $this->authorizeResource(Event::class, 'event', [
-            'except' => ['show']
-        ]);
+        $this->authorizeResource(Event::class, 'event');
     }
 
     /**
@@ -28,7 +24,8 @@ class EventController extends Controller
     public function index(Request $request)
     {
         return Inertia::render('Home', [
-            'events' => $request->user()->events()->get(['id', 'name', 'start_date'])
+            'events' => $request->user()->events()->get(['id', 'name', 'start_date']),
+            'invites' => $request->user()->invites()
         ]);
     }
 
@@ -39,7 +36,6 @@ class EventController extends Controller
      */
     public function create(Request $request)
     {
-        //dd(URL::signedRoute('event.view', ['event' => 1, 'invite' => 1]));
         return Inertia::render('Event/Create');
     }
 
@@ -69,6 +65,30 @@ class EventController extends Controller
 
         $event->refresh();
 
+        return redirect()->route('event.details', [$event]);
+    }
+
+    public function details(Request $request, Event $event) {
+        $this->authorize('update', $event);
+
+        return Inertia::render('Event/Details', [
+            'event' => $event
+        ]);
+    }
+
+    public function storeDetails(Request $request, Event $event) {
+        $this->authorize('update', $event);
+
+        Validator::make($request->all(), [
+            'location' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string']
+        ])->validateWithBag('eventDetails');
+
+        $event->location = $request->location;
+        $event->description = $request->description;
+        $event->save();
+
+
         return redirect()->route('event.edit', [$event]);
     }
 
@@ -80,17 +100,12 @@ class EventController extends Controller
      */
     public function show(Request $request, Event $event)
     {
-        // need to check if they are logged in 
-        // check if they have an account but arent logged in and are using either public or private link
-        //if (!$request->hasValidSignature()) {
-        //    abort(401);
-        //}
-
-        // if they have an account and are logged out, tell them to view all of their events to log in 
-        // if they dont have an account, tell them to register to view all events and create their own
+        // this is the private link to view an event, so we know they are logged in 
+        // update the event view policy to make sure they have been invited
 
         return Inertia::render('Event/View', [
-            'event' => $event
+            'event' => $event->load('user'),
+            'invites' => $event->invites()->with('contact:id,name')->get()
         ]);
     }
 
@@ -122,10 +137,14 @@ class EventController extends Controller
             'start_date' => ['required', 'date'],
             'start_time' => ['required', 'date_format:g:i A'],
             'end_date' => ['nullable', 'required_if:end_toggle,true','date', 'after_or_equal:start_date'],
-            'end_time' => ['nullable', 'required_if:end_toggle,true','date_format:g:i A']
+            'end_time' => ['nullable', 'required_if:end_toggle,true','date_format:g:i A'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string']
         ])->validateWithBag('editEvent');
 
         $event->name = $request->name;
+        $event->location = $request->location;
+        $event->description = $request->description;
         $event->start_date = strtotime($request->start_date . ' ' . $request->start_time);
         if ($request->end_toggle)
             $event->end_date = strtotime($request->end_date . ' ' . $request->end_time);

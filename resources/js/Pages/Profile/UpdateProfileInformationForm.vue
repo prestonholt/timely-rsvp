@@ -51,7 +51,7 @@
             <!-- Phone -->
             <div class="col-span-6 sm:col-span-4">
                 <jet-label for="phone" value="Phone" />
-                <jet-input id="phone" type="tel" class="mt-1 block w-full" v-model="form.phone" @input="acceptNumber" />
+                <jet-phone-input id="phone" type="tel" class="mt-1 block w-full" v-model="form.phone" />
                 <jet-input-error :message="form.error('phone')" class="mt-2" />
             </div>
         </template>
@@ -69,9 +69,11 @@
 </template>
 
 <script>
+    import ValidatePhoneNumber from '../../Mixins/ValidatePhoneNumber.js'
     import JetButton from '@/Jetstream/Button'
     import JetFormSection from '@/Jetstream/FormSection'
     import JetInput from '@/Jetstream/Input'
+    import JetPhoneInput from '@/Jetstream/PhoneInput'
     import JetInputError from '@/Jetstream/InputError'
     import JetLabel from '@/Jetstream/Label'
     import JetActionMessage from '@/Jetstream/ActionMessage'
@@ -83,14 +85,17 @@
             JetButton,
             JetFormSection,
             JetInput,
+            JetPhoneInput,
             JetInputError,
             JetLabel,
             JetSecondaryButton,
         },
 
+        mixins: [ValidatePhoneNumber],
+
         props: ['user'],
         mounted() {
-            this.acceptNumber();
+            //this.acceptNumber();
         },
 
         data() {
@@ -140,12 +145,6 @@
                 }).then(() => {
                     this.photoPreview = null
                 });
-            },
-
-            acceptNumber(event) {
-                var x = this.form.phone.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-                this.form.phone = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-                this.$forceUpdate();
             },
         },
     }

@@ -30,9 +30,9 @@ class EventPolicy
      */
     public function view(User $user, Event $event)
     {
-        // Public user with no account? User that has been invited?
-        return true;
-        //return $user->id === $event->user->id;
+        // The user is accessing the event through private url, not public
+        // Make sure they have been invited to the event
+        return $user->hasBeenInvitedTo($event);
     }
 
     /**

@@ -8,7 +8,10 @@
                         <!-- Logo -->
                         <div class="flex-shrink-0 flex items-center">
                             <inertia-link :href="route('home')">
-                                <jet-application-mark class="block h-9 w-auto" />
+                                <div class="flex">
+                                    <jet-application-mark class="block h-9 w-auto" />
+                                    <h1 class="my-auto text-xl font-semibold tracking-tight">TimelyRSVP</h1>
+                                </div>
                             </inertia-link>
                         </div>
 
@@ -108,7 +111,7 @@
 
                         <div class="ml-3">
                             <div class="font-medium text-base text-gray-800">{{ $page.user.name }}</div>
-                            <div class="font-medium text-sm text-gray-500">{{ $page.user.phone }}</div>
+                            <div class="font-medium text-sm text-gray-500">{{ prettyNumber($page.user.phone) }}</div>
                         </div>
                     </div>
 
@@ -153,6 +156,7 @@
     import JetDropdownLink from '@/Jetstream/DropdownLink'
     import JetNavLink from '@/Jetstream/NavLink'
     import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
+    import ValidatePhoneNumber from '../Mixins/ValidatePhoneNumber.js'
 
     export default {
         components: {
@@ -162,6 +166,8 @@
             JetNavLink,
             JetResponsiveNavLink,
         },
+
+        mixins: [ValidatePhoneNumber],
 
         data() {
             return {

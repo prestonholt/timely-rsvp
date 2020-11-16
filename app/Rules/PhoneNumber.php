@@ -25,9 +25,7 @@ class PhoneNumber implements Rule
      */
     public function passes($attribute, $value)
     {
-        $value = preg_replace('/\D+/', '', $value);
         return preg_match('/\d{10}/', $value) && strlen($value) == 10;
-
     }
 
     /**

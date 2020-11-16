@@ -56,6 +56,10 @@ class NewPasswordController extends Controller
      */
     public function store(Request $request): Responsable
     {
+        $request->merge([
+            'phone' => preg_replace('/\D+/', '', $request->phone),
+        ]);
+
         $request->validate([
             'token' => 'required',
             'phone' => ['required', new PhoneNumber],

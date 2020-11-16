@@ -11,14 +11,65 @@
         	<button type="button" @click="editEvent" class="inline-flex items-center px-3 py-1 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 transition ease-in-out fduration-150">Edit</button>
         </div>
       </div>
+
+      <!-- Calendar Icon and Text -->
       <div class="mt-2 flex items-center text-sm leading-5 text-gray-500">
-        <!-- Heroicon name: calendar -->
         <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
         </svg>
-        {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }}
+        <template v-if="!event.end_date">
+          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }}
+        </template>
+        <template v-else-if="dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').isSame(dayjs(event.end_date, 'YYYY-MM-DD H:mm:ss'), 'day')">
+          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY') }}
+          <br>
+          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('h:mma') }} - {{ dayjs(event.end_date, 'YYYY-MM-DD H:mm:ss').format('h:mma') }}
+        </template>
+        <template v-else>
+          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }} -
+          <br>
+          {{ dayjs(event.end_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }}
+        </template>
+        
+      </div>
+
+      <!-- Location Icon and Text -->
+      <div v-if="event.location" class="mt-2 flex items-center text-sm leading-5 text-gray-500">
+        <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+  				<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+				</svg>
+       	{{ event.location }}
+      </div>
+
+      <!-- Responses Icon and Text -->
+      <div v-if="numberPending || numberAccepted || numberDeclined" class="mt-2 flex flex-wrap items-center text-sm leading-5 text-gray-500">
+        <template v-if="numberPending">
+          <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+          </svg>
+          {{ numberPending }} Pending
+        </template>
+        <template v-if="numberAccepted">
+          <svg class="flex-shrink-0 h-5 w-5 text-gray-400" :class="{ 'ml-1.5': numberPending }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          {{ numberAccepted }} Accepted
+        </template>
+        <template v-if="numberDeclined">
+          <svg class="flex-shrink-0 h-5 w-5 text-gray-400" :class="{ 'ml-1.5': numberAccepted || numberPending }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+          {{ numberDeclined }} Declined
+        </template>
+      </div>
+
+      <div v-if="event.description" class="mt-2 flex items-center text-sm leading-5 px-2 py-1 border border-gray-300 rounded-md bg-gray-100">
+      	<div class="text-gray-500">
+      		{{ event.description }}
+      	</div>
       </div>
 		</template>
+
 		<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<div class="flex flex-col">
 			  <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -35,7 +86,7 @@
 				      	</div>
 				      	<div class="bg-white divide-y divide-gray-200">
 
-				      		<div v-for="invite in invites" v-bind:key="invite.id" @click="editInvite(invite)">
+				      		<div v-for="invite in invites" v-bind:key="invite.id" @click="editInvite(invite)" class="cursor-pointer active:bg-gray-100">
 							      <div class="px-6 py-4">
 							      	<div class="flex justify-between">
 								      	<div class="flex flex-wrap overflow-hidden">
@@ -43,7 +94,7 @@
 									      	<div class="flex items-center">
 									      		<div>
 									          	<div class="text-sm leading-5 font-medium text-gray-900">
-								              	{{ invite.contact.name }}
+								              	<a class="hover:underline" @click.stop :href="'sms://' + invite.contact.phone">{{ invite.contact.name }}</a>
 								            	</div>
 									            <div v-if="dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').isAfter(dayjs(), 'minute') && invite.accepted === null" class="text-sm leading-5 text-gray-500">
 									              Expires {{ dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').fromNow() }}
@@ -76,7 +127,7 @@
 								    </div>
 								  </div>
 								  <div v-if="!invites.length" class="flex-shrink-0">
-								  	<div class="text-sm p-2 pl-4 font-medium text-gray-900">
+								  	<div class="text-sm p-2 pl-6 font-medium text-gray-900">
 								  		You have not invited anybody yet
 								  	</div>
 								  </div>
@@ -89,7 +140,7 @@
 			</div>
 		</div>
 
-		<!-- Invite Contact -->
+		<!-- Send Invite -->
     <jet-dialog-modal :show="sendingInvite" @close="sendingInvite = false">
       <template #title>
         Send Invite
@@ -98,7 +149,7 @@
       <template #content>
         <div class="col-span-6 sm:col-span-4">
 	        <jet-label for="name" value="Name" />
-	        <jet-input id="name" type="text" class="mt-1 block w-full" v-model="form.name" @focus.native="showContactOptions=true" @blur.native="showContactOptions=false" ref="name" placeholder="Full Name" autocomplete="off" />
+	        <jet-input id="name" type="text" class="mt-1 block w-full capitalize" v-model="form.name" @focus.native="showContactOptions=true" @blur.native="showContactOptions=false" ref="name" placeholder="Full Name" autocomplete="off" />
 	        <jet-input-error :message="form.error('name')" class="mt-2" />
 	        <jet-input-error :message="form.error('duplicate')" class="mt-2" />
         </div>
@@ -131,7 +182,7 @@
 
         <div class="col-span-6 sm:col-span-4 pt-4 pb-4">
 	        <jet-label for="phone" value="Phone Number" />
-	        <jet-input id="phone" type="tel" class="mt-1 block w-full" v-model="form.phone" ref="phone" placeholder="Phone Number" @keyup.enter.native="sendInvite"  @input="acceptNumber" />
+	        <jet-phone-input id="phone" class="mt-1 block w-full" v-model="form.phone" ref="phone" placeholder="Phone Number" @keyup.enter.native="sendInvite" />
 	        <jet-input-error :message="form.error('phone')" class="mt-2" />
         </div>
 
@@ -171,14 +222,14 @@
       <template #content>
         <div class="col-span-6 sm:col-span-4 pb-4">
 	        <jet-label for="edit_name" value="Name" />
-	        <jet-input id="edit_name" type="text" class="mt-1 block w-full" v-model="editInviteForm.name" ref="name" placeholder="Full Name" autocomplete="off" />
+	        <jet-input id="edit_name" type="text" class="mt-1 block w-full capitalize" v-model="editInviteForm.name" ref="name" placeholder="Full Name" autocomplete="off" />
 	        <jet-input-error :message="editInviteForm.error('name')" class="mt-2" />
 	        <jet-input-error :message="editInviteForm.error('duplicate')" class="mt-2" />
         </div>
 
         <div class="col-span-6 sm:col-span-4 pb-4">
 	        <jet-label for="edit_phone" value="Phone Number" />
-	        <jet-input id="edit_phone" type="tel" class="mt-1 block w-full bg-gray-200" v-model="editInviteForm.phone" ref="phone" placeholder="Phone Number" disabled />
+	        <jet-phone-input id="edit_phone" class="mt-1 block w-full bg-gray-200" v-model="editInviteForm.phone" ref="phone" placeholder="Phone Number" disabled />
         </div>
 
         <div class="col-span-6 sm:col-span-4 pb-4">
@@ -272,6 +323,19 @@
 		      <jet-input-error :message="editEventForm.error('end_time')" class="mt-2" />
         </div>
 
+        <div class="col-span-6 sm:col-span-4 pb-4">
+	        <jet-label for="location" value="Location" />
+	        <jet-input id="location" type="text" class="mt-1 block w-full" v-model="editEventForm.location" ref="location" placeholder="Home, Restaurant" />
+	        <jet-input-error :message="editEventForm.error('location')" class="mt-2" />
+        </div>
+
+        <div class="col-span-6 sm:col-span-4 pb-4">
+	        <jet-label for="description" value="Description" />
+	        <textarea id="description" rows="2" class="form-input rounded-md shadow-sm mt-1 block w-full" v-model="editEventForm.description" ref="description" placeholder="Description of event">
+	        </textarea>
+	        <jet-input-error :message="editEventForm.error('description')" class="mt-2" />
+        </div>
+
         <div class="col-span-6 sm:col-span-4">
 	        <jet-label value="Delete Event" />
 	        <jet-danger-button @click.native="deleteEvent"> 
@@ -299,11 +363,13 @@
 </template>
 
 <script>
+  import ValidatePhoneNumber from '../../Mixins/ValidatePhoneNumber.js'
 	import AppLayout from '@/Layouts/AppLayout'
 	import JetActionMessage from '@/Jetstream/ActionMessage'
   import JetButton from '@/Jetstream/Button'
   import JetFormSection from '@/Jetstream/FormSection'
   import JetInput from '@/Jetstream/Input'
+  import JetPhoneInput from '@/Jetstream/PhoneInput'
   import JetInputError from '@/Jetstream/InputError'
   import JetLabel from '@/Jetstream/Label'
   import JetTimePicker from '@/Jetstream/TimePicker'
@@ -318,6 +384,7 @@
       JetButton,
       JetFormSection,
       JetInput,
+      JetPhoneInput,
       JetInputError,
       JetLabel,
       JetTimePicker,
@@ -325,6 +392,7 @@
       JetSecondaryButton,
       JetDangerButton,
     },
+    mixins: [ValidatePhoneNumber],
 
     data: function() {
     	return {
@@ -364,7 +432,9 @@
           start_time: '',
           end_toggle: false,
          	end_date: '',
-          end_time: ''
+          end_time: '',
+          location: '',
+          description: ''
         }, {
           bag: 'editEvent',
           resetOnSuccess: true,
@@ -423,6 +493,26 @@
     				this.editEventForm.end_date = newValue;
     		}
     	},
+    },
+
+    computed: {
+      numberPending() {
+        return this.invites.filter(function(invite) {
+          return invite.accepted === null;
+        }).length;
+      },
+
+      numberAccepted() {
+        return this.invites.filter(function(invite) {
+          return invite.accepted === true;
+        }).length;
+      },
+
+      numberDeclined() {
+        return this.invites.filter(function(invite) {
+          return invite.accepted === false;
+        }).length;
+      },
     },
 
     methods: {
@@ -512,6 +602,9 @@
 	    		this.editEventForm.end_date = this.dayjs(this.event.end_date, 'YYYY-MM-DD H:mm:ss').format('YYYY-MM-DD');
 	    		this.editEventForm.end_time = this.dayjs(this.event.end_date, 'YYYY-MM-DD H:mm:ss').format('h:mm A');
 	    	}
+	    	this.editEventForm.location = this.event.location;
+	    	this.editEventForm.description = this.event.description;
+
 	    },
 
 	    updateEvent() {
@@ -533,16 +626,6 @@
           }
         })
 	    },
-
-	    acceptNumber(event) {
-        this.form.phone = this.prettyNumber(this.form.phone);
-        this.$forceUpdate();
-    	},
-
-    	prettyNumber(number) {
-    		var x = number.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-        return !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-    	}
 
     },
   }

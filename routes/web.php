@@ -17,6 +17,7 @@ use Laravel\Fortify\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ShortUrlController;
 use Inertia\Inertia;
 
 /*
@@ -34,11 +35,20 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/', [EventController::class, 'index'])
         ->name('home');
 
+    Route::get('/event/view/{event}', [EventController::class, 'show'])
+        ->name('event.view');
+
     Route::get('/event/create', [EventController::class, 'create'])
         ->name('event.create');
 
     Route::post('/event/store', [EventController::class, 'store'])
         ->name('event.store');
+
+    Route::get('/event/details/{event}', [EventController::class, 'details'])
+        ->name('event.details');
+
+    Route::post('/event/details/{event}/store', [EventController::class, 'storeDetails'])
+        ->name('event.details.store');
 
     Route::get('/event/edit/{event}', [EventController::class, 'edit'])
         ->name('event.edit');
@@ -64,8 +74,11 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     
 });
 
-Route::get('/event/view/{event}/{invite}', [EventController::class, 'show'])
-        ->name('event.view');
+Route::get('/invite/{invite}', [InviteController::class, 'show'])
+        ->name('invite.view');
+
+Route::get('/s/{short_url:short}', [ShortUrlController::class, 'route'])
+        ->name('short.route');
 
 Route::group(['middleware' => config('fortify.middleware', ['web'])], function () {
     // Authentication...
@@ -92,7 +105,7 @@ Route::group(['middleware' => config('fortify.middleware', ['web'])], function (
 
         Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
             ->middleware(['guest'])
-            ->name('password.email');
+            ->name('password.phone');
 
         Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
             ->middleware(['guest'])

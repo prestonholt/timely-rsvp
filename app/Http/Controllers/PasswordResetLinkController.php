@@ -35,6 +35,10 @@ class PasswordResetLinkController extends Controller
      */
     public function store(Request $request): Responsable
     {
+        $request->merge([
+            'phone' => preg_replace('/\D+/', '', $request->phone),
+        ]);
+        
         $request->validate(['phone' => ['required', new PhoneNumber]]);
 
         // We will send the password reset link to this user. Once we have attempted

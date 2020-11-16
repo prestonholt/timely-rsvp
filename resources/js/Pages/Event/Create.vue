@@ -8,7 +8,7 @@
 		<div class="max-w-7xl mx-auto py-4 sm:px-6 lg:px-8">
 			<jet-form-section @submitted="createEvent">
 	      <template #title>
-	        Event Details
+	        Event Information
 	      </template>
 
 	      <template #description>
@@ -65,7 +65,7 @@
 	      </template>
 
 	      <template #actions>
-	        <jet-button :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+	        <jet-button type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
 	          Next
 	        </jet-button>
 	      </template>
