@@ -105,7 +105,8 @@ class EventController extends Controller
 
         return Inertia::render('Event/View', [
             'event' => $event->load('user'),
-            'invites' => $event->invites()->with('contact:id,name')->get()
+            'invites' => $event->invites()->with('contact:id,name')->get(),
+            'invite' => $request->user()->getInviteForEvent($event)
         ]);
     }
 
@@ -115,11 +116,14 @@ class EventController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Event $event)
+    public function edit(Request $request, Event $event)
     {
         return Inertia::render('Event/Edit', [
             'event' => $event,
-            'invites' => $event->invites()->with('contact')->get()
+            'invites' => $event->invites()->with('contact')->get(),
+            'invite_url' => $request->session()->get('invite_url', function () {
+                return null;
+            })
         ]);
     }
 

@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notification;
 use NotificationChannels\Twilio\TwilioChannel;
 use NotificationChannels\Twilio\TwilioSmsMessage;
 
-class DayInviteReminder extends Notification implements ShouldQueue
+class WeekInviteReminder extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -51,7 +51,7 @@ class DayInviteReminder extends Notification implements ShouldQueue
     public function toTwilio($notifiable)
     {
         return (new TwilioSmsMessage())
-            ->content('Please let ' . $notifiable->event->user->name . ' know whether you are coming to their event before tomorrow at ' . $notifiable->expiration->format('h:iA') . '. ' . $notifiable->shortUrl->textableUrl());
+            ->content('Please let ' . $notifiable->event->user->name . ' know whether you are coming to their event before next ' . $notifiable->expiration->format('l') . '. ' . $notifiable->shortUrl->textableUrl());
     }
 
     /**

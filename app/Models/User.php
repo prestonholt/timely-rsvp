@@ -94,6 +94,14 @@ class User extends Authenticatable
         return false;
     }
 
+    public function getInviteForEvent(Event $event) {
+        foreach ($event->invites()->with('contact')->get() as $invite)
+            if ($invite->contact->phone == $this->phone)
+                return $invite;
+
+        return null;
+    }
+
     /**
      * Get the user's links.
      */

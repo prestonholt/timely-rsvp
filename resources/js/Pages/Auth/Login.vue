@@ -10,6 +10,13 @@
             {{ status }}
         </div>
 
+        <h2 class="text-center text-xl leading-9 font-extrabold text-gray-900">Don't have an account?</h2>
+        <p class="text-center leading-3 pb-3">
+            <a :href="route('register')" class="underline text-sm text-gray-600 hover:text-gray-900">
+              Register with your phone number
+            </a>
+        </p>
+
         <form @submit.prevent="submit">
             <div>
                 <jet-label for="phone" value="Phone Number" />

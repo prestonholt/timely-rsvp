@@ -25,7 +25,7 @@ class InviteController extends Controller
 
     	Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', new PhoneNumber, new ExcludeThisPhone($request->user()->phone)],
+            'phone' => ['required', new PhoneNumber/*, new ExcludeThisPhone($request->user()->phone)*/],
             'expiration_date' => ['required', 'date'],
             'expiration_time' => ['required', 'date_format:g:i A'],
         ])->validateWithBag('sendInvite');
@@ -59,12 +59,14 @@ class InviteController extends Controller
     	$invite->contact()->associate($contact);
     	$invite->expiration = strtotime($request->expiration_date . ' ' . $request->expiration_time);
     	$invite->save();
+        $invite->refresh();
 
     	// Notify person of invitation
-    	$invite->notify(new InviteSent);
+        if ($request->send_invite)
+    	   $invite->notify(new InviteSent);
 
     	// Redirect to event page so that invites reload
-    	return redirect()->route('event.edit', [$event]);
+    	return redirect()->route('event.edit', [$event])->with('invite_url', $invite->shortUrl->textableUrl());
     }
 
     public function update(Request $request, Event $event, Invite $invite) {
@@ -118,7 +120,8 @@ class InviteController extends Controller
         // if they dont have an account, tell them to register to view all events and create their own
         return Inertia::render('Event/View', [
             'event' => $invite->event()->with('user')->first(),
-            'invites' => $invite->event->invites()->with('contact:id,name')->get()
+            'invites' => $invite->event->invites()->with('contact:id,name')->get(),
+            'invite' => $invite->load('contact')
         ]);
     }
 

@@ -1,5 +1,15 @@
 <template>
 	<app-layout>
+    <template #banner>
+      <div v-if="!$page.user" class="bg-indigo-100 border-t-2 border-indigo-500 rounded-b px-4 py-3 shadow-md" role="alert">
+        <div class="flex">
+          <p v-if="invite.contact.is_registered" class="text-sm">It looks like you have an account. <a class="underline" :href="route('login')">Login here</a> to see all your events and create your own.</p>
+          <p v-else class="text-sm">It looks like you don't have an account. <a class="underline" :href="route('login')">Register here</a> to see all your events and create your own.</p>
+        </div>
+      </div>
+    </div>
+    </template>
+
 		<template #header>
       <div class="flex justify-between">
         <div class="my-auto">
@@ -15,17 +25,17 @@
           <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
         </svg>
         <template v-if="!event.end_date">
-          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }}
+          {{ dayjs(event.start_date).format('MMMM D, YYYY [at] h:mma') }}
         </template>
-        <template v-else-if="dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').isSame(dayjs(event.end_date, 'YYYY-MM-DD H:mm:ss'), 'day')">
-          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY') }}
+        <template v-else-if="dayjs(event.start_date).isSame(dayjs(event.end_date), 'day')">
+          {{ dayjs(event.start_date).format('MMMM D, YYYY') }}
           <br>
-          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('h:mma') }} - {{ dayjs(event.end_date, 'YYYY-MM-DD H:mm:ss').format('h:mma') }}
+          {{ dayjs(event.start_date).format('h:mma') }} - {{ dayjs(event.end_date).format('h:mma') }}
         </template>
         <template v-else>
-          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }} -
+          {{ dayjs(event.start_date).format('MMMM D, YYYY [at] h:mma') }} -
           <br>
-          {{ dayjs(event.end_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }}
+          {{ dayjs(event.end_date).format('MMMM D, YYYY [at] h:mma') }}
         </template>
         
       </div>
@@ -110,21 +120,18 @@
     data: function() {
     	return {
     		dayjs: require('dayjs'),
-
-    		
     	}
     },
 
     beforeMount() {
-    	var customParseFormat = require('dayjs/plugin/customParseFormat');
     	var relativeTime = require('dayjs/plugin/relativeTime');
-			this.dayjs.extend(customParseFormat);
 			this.dayjs.extend(relativeTime);
     },
 
     props: {
       event: Object,
       invites: Array,
+      invite: Object,
     },
 
     computed: {

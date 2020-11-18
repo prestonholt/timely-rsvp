@@ -3159,6 +3159,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 
@@ -3615,6 +3616,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Jetstream_PhoneInput__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../Jetstream/PhoneInput */ "./resources/js/Jetstream/PhoneInput.vue");
 /* harmony import */ var _Jetstream_Label__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../Jetstream/Label */ "./resources/js/Jetstream/Label.vue");
 /* harmony import */ var _Jetstream_ValidationErrors__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../Jetstream/ValidationErrors */ "./resources/js/Jetstream/ValidationErrors.vue");
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -4193,7 +4201,7 @@ dayjs.extend(customParseFormat);
   watch: {
     'form.end_toggle': function formEnd_toggle(newValue, oldValue) {
       if (newValue == true) {
-        if (this.form.start_date && this.form.start_time) var date = dayjs(this.form.start_date + ' ' + this.form.start_time, 'YYYY-MM-DD h:mm A');else if (this.form.start_date) var date = dayjs(this.form.start_date, 'YYYY-MM-DD');else if (this.form.start_time) var date = dayjs(this.form.start_time, 'h:mm A');else return;
+        if (this.form.start_date && this.form.start_time) var date = dayjs(this.form.start_date + ' ' + this.form.start_time);else if (this.form.start_date) var date = dayjs(this.form.start_date, 'YYYY-MM-DD');else if (this.form.start_time) var date = dayjs(this.form.start_time, 'h:mm A');else return;
         date = date.add(1, 'hour').add(30, 'minute');
         if (this.form.start_date) this.form.end_date = date.format('YYYY-MM-DD');
         this.form.end_time = date.format('h:mm A');
@@ -4708,6 +4716,46 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -4745,9 +4793,11 @@ __webpack_require__.r(__webpack_exports__);
       showContactOptions: false,
       editingInvite: false,
       editingEvent: false,
+      displayLink: false,
       form: this.$inertia.form({
         name: '',
         phone: '',
+        send_invite: true,
         expiration_date: '',
         expiration_time: ''
       }, {
@@ -4789,12 +4839,15 @@ __webpack_require__.r(__webpack_exports__);
     this.dayjs.extend(relativeTime);
   },
   mounted: function mounted() {
-    this.form.expiration_date = this.dayjs(this.event.start_date, 'YYYY-MM-DD H:mm:ss').subtract(1, 'day').format('YYYY-MM-DD');
-    this.form.expiration_time = this.dayjs(this.event.start_date, 'YYYY-MM-DD H:mm:ss').format('h:mm A');
+    this.form.expiration_date = this.dayjs(this.event.start_date).subtract(1, 'day').format('YYYY-MM-DD');
+    this.form.expiration_time = this.dayjs(this.event.start_date).format('h:mm A');
   },
   props: {
     event: Object,
-    invites: Array
+    invites: Array,
+    invite_url: {
+      "default": null
+    }
   },
   watch: {
     'form.name': function formName(newValue, oldValue) {
@@ -4802,7 +4855,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     'editEventForm.end_toggle': function editEventFormEnd_toggle(newValue, oldValue) {
       if (newValue == true) {
-        if (this.editEventForm.start_date && this.editEventForm.start_time) var date = this.dayjs(this.editEventForm.start_date + ' ' + this.editEventForm.start_time, 'YYYY-MM-DD h:mm A');else if (this.editEventForm.start_date) var date = this.dayjs(this.editEventForm.start_date, 'YYYY-MM-DD');else if (this.editEventForm.start_time) var date = this.dayjs(this.editEventForm.start_time, 'h:mm A');else return;
+        if (this.editEventForm.start_date && this.editEventForm.start_time) var date = this.dayjs(this.editEventForm.start_date + ' ' + this.editEventForm.start_time);else if (this.editEventForm.start_date) var date = this.dayjs(this.editEventForm.start_date, 'YYYY-MM-DD');else if (this.editEventForm.start_time) var date = this.dayjs(this.editEventForm.start_time, 'h:mm A');else return;
         date = date.add(1, 'hour').add(30, 'minute');
         if (this.editEventForm.start_date) this.editEventForm.end_date = date.format('YYYY-MM-DD');
         this.editEventForm.end_time = date.format('h:mm A');
@@ -4832,6 +4885,9 @@ __webpack_require__.r(__webpack_exports__);
       return this.invites.filter(function (invite) {
         return invite.accepted === false;
       }).length;
+    },
+    inviteMessage: function inviteMessage() {
+      return 'sms:/' + this.form.phone + '&body=' + this.invite_url;
     }
   },
   methods: {
@@ -4841,6 +4897,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.form.name = '';
       this.form.phone = '';
+      this.form.send_invite = true;
       this.sendingInvite = true;
       this.contactOptions = [];
       this.showContactOptions = false;
@@ -4856,6 +4913,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         if (!_this2.form.hasErrors()) {
           _this2.sendingInvite = false;
+          if (!_this2.form.send_invite) _this2.displayLink = true;
         }
       });
     },
@@ -4883,8 +4941,8 @@ __webpack_require__.r(__webpack_exports__);
       this.editInviteForm.id = invite.id;
       this.editInviteForm.name = invite.contact.name;
       this.editInviteForm.phone = this.prettyNumber(invite.contact.phone);
-      this.editInviteForm.expiration_date = this.dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').format('YYYY-MM-DD');
-      this.editInviteForm.expiration_time = this.dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').format('h:mm A');
+      this.editInviteForm.expiration_date = this.dayjs(invite.expiration).format('YYYY-MM-DD');
+      this.editInviteForm.expiration_time = this.dayjs(invite.expiration).format('h:mm A');
     },
     updateInvite: function updateInvite() {
       var _this4 = this;
@@ -4919,13 +4977,13 @@ __webpack_require__.r(__webpack_exports__);
       this.editingEvent = true;
       this.editEventForm.id = this.event.id;
       this.editEventForm.name = this.event.name;
-      this.editEventForm.start_date = this.dayjs(this.event.start_date, 'YYYY-MM-DD H:mm:ss').format('YYYY-MM-DD');
-      this.editEventForm.start_time = this.dayjs(this.event.start_date, 'YYYY-MM-DD H:mm:ss').format('h:mm A');
+      this.editEventForm.start_date = this.dayjs(this.event.start_date).format('YYYY-MM-DD');
+      this.editEventForm.start_time = this.dayjs(this.event.start_date).format('h:mm A');
       this.editEventForm.end_toggle = !!this.event.end_date;
 
       if (this.editEventForm.end_toggle) {
-        this.editEventForm.end_date = this.dayjs(this.event.end_date, 'YYYY-MM-DD H:mm:ss').format('YYYY-MM-DD');
-        this.editEventForm.end_time = this.dayjs(this.event.end_date, 'YYYY-MM-DD H:mm:ss').format('h:mm A');
+        this.editEventForm.end_date = this.dayjs(this.event.end_date).format('YYYY-MM-DD');
+        this.editEventForm.end_time = this.dayjs(this.event.end_date).format('h:mm A');
       }
 
       this.editEventForm.location = this.event.location;
@@ -5063,6 +5121,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -5094,16 +5162,14 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   beforeMount: function beforeMount() {
-    var customParseFormat = __webpack_require__(/*! dayjs/plugin/customParseFormat */ "./node_modules/dayjs/plugin/customParseFormat.js");
-
     var relativeTime = __webpack_require__(/*! dayjs/plugin/relativeTime */ "./node_modules/dayjs/plugin/relativeTime.js");
 
-    this.dayjs.extend(customParseFormat);
     this.dayjs.extend(relativeTime);
   },
   props: {
     event: Object,
-    invites: Array
+    invites: Array,
+    invite: Object
   },
   computed: {
     numberPending: function numberPending() {
@@ -27180,14 +27246,21 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _c("header", { staticClass: "bg-white shadow" }, [
-        _c(
-          "div",
-          { staticClass: "max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8" },
-          [_vm._t("header")],
-          2
-        )
-      ]),
+      _c(
+        "header",
+        { staticClass: "bg-white shadow" },
+        [
+          _vm._t("banner"),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8" },
+            [_vm._t("header")],
+            2
+          )
+        ],
+        2
+      ),
       _vm._v(" "),
       _c("main", [_vm._t("default")], 2),
       _vm._v(" "),
@@ -28042,6 +28115,26 @@ var render = function() {
             [_vm._v("\n        " + _vm._s(_vm.status) + "\n    ")]
           )
         : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "h2",
+        {
+          staticClass:
+            "text-center text-xl leading-9 font-extrabold text-gray-900"
+        },
+        [_vm._v("Don't have an account?")]
+      ),
+      _vm._v(" "),
+      _c("p", { staticClass: "text-center leading-3 pb-3" }, [
+        _c(
+          "a",
+          {
+            staticClass: "underline text-sm text-gray-600 hover:text-gray-900",
+            attrs: { href: _vm.route("register") }
+          },
+          [_vm._v("\n          Register with your phone number\n        ")]
+        )
+      ]),
       _vm._v(" "),
       _c(
         "form",
@@ -29323,30 +29416,21 @@ var render = function() {
                           "\n          " +
                             _vm._s(
                               _vm
-                                .dayjs(
-                                  _vm.event.start_date,
-                                  "YYYY-MM-DD H:mm:ss"
-                                )
+                                .dayjs(_vm.event.start_date)
                                 .format("MMMM D, YYYY [at] h:mma")
                             ) +
                             "\n        "
                         )
                       ]
                     : _vm
-                        .dayjs(_vm.event.start_date, "YYYY-MM-DD H:mm:ss")
-                        .isSame(
-                          _vm.dayjs(_vm.event.end_date, "YYYY-MM-DD H:mm:ss"),
-                          "day"
-                        )
+                        .dayjs(_vm.event.start_date)
+                        .isSame(_vm.dayjs(_vm.event.end_date), "day")
                     ? [
                         _vm._v(
                           "\n          " +
                             _vm._s(
                               _vm
-                                .dayjs(
-                                  _vm.event.start_date,
-                                  "YYYY-MM-DD H:mm:ss"
-                                )
+                                .dayjs(_vm.event.start_date)
                                 .format("MMMM D, YYYY")
                             ) +
                             "\n          "
@@ -29355,18 +29439,11 @@ var render = function() {
                         _vm._v(
                           "\n          " +
                             _vm._s(
-                              _vm
-                                .dayjs(
-                                  _vm.event.start_date,
-                                  "YYYY-MM-DD H:mm:ss"
-                                )
-                                .format("h:mma")
+                              _vm.dayjs(_vm.event.start_date).format("h:mma")
                             ) +
                             " - " +
                             _vm._s(
-                              _vm
-                                .dayjs(_vm.event.end_date, "YYYY-MM-DD H:mm:ss")
-                                .format("h:mma")
+                              _vm.dayjs(_vm.event.end_date).format("h:mma")
                             ) +
                             "\n        "
                         )
@@ -29376,10 +29453,7 @@ var render = function() {
                           "\n          " +
                             _vm._s(
                               _vm
-                                .dayjs(
-                                  _vm.event.start_date,
-                                  "YYYY-MM-DD H:mm:ss"
-                                )
+                                .dayjs(_vm.event.start_date)
                                 .format("MMMM D, YYYY [at] h:mma")
                             ) +
                             " -\n          "
@@ -29389,7 +29463,7 @@ var render = function() {
                           "\n          " +
                             _vm._s(
                               _vm
-                                .dayjs(_vm.event.end_date, "YYYY-MM-DD H:mm:ss")
+                                .dayjs(_vm.event.end_date)
                                 .format("MMMM D, YYYY [at] h:mma")
                             ) +
                             "\n        "
@@ -29703,10 +29777,7 @@ var render = function() {
                                                     ),
                                                     _vm._v(" "),
                                                     _vm
-                                                      .dayjs(
-                                                        invite.expiration,
-                                                        "YYYY-MM-DD H:mm:ss"
-                                                      )
+                                                      .dayjs(invite.expiration)
                                                       .isAfter(
                                                         _vm.dayjs(),
                                                         "minute"
@@ -29724,8 +29795,7 @@ var render = function() {
                                                                 _vm._s(
                                                                   _vm
                                                                     .dayjs(
-                                                                      invite.expiration,
-                                                                      "YYYY-MM-DD H:mm:ss"
+                                                                      invite.expiration
                                                                     )
                                                                     .fromNow()
                                                                 ) +
@@ -29735,8 +29805,7 @@ var render = function() {
                                                         )
                                                       : _vm
                                                           .dayjs(
-                                                            invite.expiration,
-                                                            "YYYY-MM-DD H:mm:ss"
+                                                            invite.expiration
                                                           )
                                                           .isAfter(
                                                             _vm.dayjs(),
@@ -29755,8 +29824,7 @@ var render = function() {
                                                                 _vm._s(
                                                                   _vm
                                                                     .dayjs(
-                                                                      invite.expiration,
-                                                                      "YYYY-MM-DD H:mm:ss"
+                                                                      invite.expiration
                                                                     )
                                                                     .fromNow()
                                                                 ) +
@@ -29766,8 +29834,7 @@ var render = function() {
                                                         )
                                                       : !_vm
                                                           .dayjs(
-                                                            invite.expiration,
-                                                            "YYYY-MM-DD H:mm:ss"
+                                                            invite.expiration
                                                           )
                                                           .isAfter(
                                                             _vm.dayjs(),
@@ -29788,8 +29855,7 @@ var render = function() {
                                                         )
                                                       : !_vm
                                                           .dayjs(
-                                                            invite.expiration,
-                                                            "YYYY-MM-DD H:mm:ss"
+                                                            invite.expiration
                                                           )
                                                           .isAfter(
                                                             _vm.dayjs(),
@@ -30123,7 +30189,7 @@ var render = function() {
                 _vm._v(" "),
                 _c(
                   "div",
-                  { staticClass: "col-span-6 sm:col-span-4" },
+                  { staticClass: "col-span-6 sm:col-span-4 pb-4" },
                   [
                     _c("jet-label", {
                       attrs: {
@@ -30186,7 +30252,48 @@ var render = function() {
                     })
                   ],
                   1
-                )
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "col-span-6 sm:col-span-4" }, [
+                  _c("div", { staticClass: "flex" }, [
+                    _c("div", { staticClass: "flex flex-auto" }, [
+                      _c(
+                        "p",
+                        { staticClass: "my-auto text-sm text-gray-600" },
+                        [
+                          _vm._v(
+                            "\n                Send Invite Notification\n              "
+                          )
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "flex" },
+                      [
+                        _c("t-toggle", {
+                          model: {
+                            value: _vm.form.send_invite,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "send_invite", $$v)
+                            },
+                            expression: "form.send_invite"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  !_vm.form.send_invite
+                    ? _c("p", { staticClass: "mt-1 text-sm text-gray-800" }, [
+                        _vm._v(
+                          "When this is disabled, you will be given a link to send them in order to respond to your invitation."
+                        )
+                      ])
+                    : _vm._e()
+                ])
               ]
             },
             proxy: true
@@ -30459,6 +30566,82 @@ var render = function() {
                     }
                   },
                   [_vm._v("\n          Update\n        ")]
+                )
+              ]
+            },
+            proxy: true
+          }
+        ])
+      }),
+      _vm._v(" "),
+      _c("jet-dialog-modal", {
+        attrs: { show: _vm.displayLink },
+        on: {
+          close: function($event) {
+            _vm.displayLink = false
+          }
+        },
+        scopedSlots: _vm._u([
+          {
+            key: "title",
+            fn: function() {
+              return [_vm._v("\n        Invitation Link\n      ")]
+            },
+            proxy: true
+          },
+          {
+            key: "content",
+            fn: function() {
+              return [
+                _vm._v(
+                  "\n        Unique Invitation for " +
+                    _vm._s(_vm.form.name) +
+                    ":\n        "
+                ),
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "mt-2 mb-2 flex items-center text-sm leading-5 px-2 py-1 border border-gray-300 rounded-md bg-gray-100"
+                  },
+                  [
+                    _c("div", { staticClass: "text-gray-500" }, [
+                      _vm._v(
+                        "\n            " +
+                          _vm._s(_vm.invite_url) +
+                          "\n          "
+                      )
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass:
+                      "inline-flex items-center px-3 py-1 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 transition ease-in-out fduration-150",
+                    attrs: { href: _vm.inviteMessage }
+                  },
+                  [_vm._v("Compose Message")]
+                )
+              ]
+            },
+            proxy: true
+          },
+          {
+            key: "footer",
+            fn: function() {
+              return [
+                _c(
+                  "jet-secondary-button",
+                  {
+                    nativeOn: {
+                      click: function($event) {
+                        _vm.displayLink = false
+                      }
+                    }
+                  },
+                  [_vm._v("\n          Close\n        ")]
                 )
               ]
             },
@@ -30870,6 +31053,57 @@ var render = function() {
   return _c("app-layout", {
     scopedSlots: _vm._u([
       {
+        key: "banner",
+        fn: function() {
+          return [
+            !_vm.$page.user
+              ? _c(
+                  "div",
+                  {
+                    staticClass:
+                      "bg-indigo-100 border-t-2 border-indigo-500 rounded-b px-4 py-3 shadow-md",
+                    attrs: { role: "alert" }
+                  },
+                  [
+                    _c("div", { staticClass: "flex" }, [
+                      _vm.invite.contact.is_registered
+                        ? _c("p", { staticClass: "text-sm" }, [
+                            _vm._v("It looks like you have an account. "),
+                            _c(
+                              "a",
+                              {
+                                staticClass: "underline",
+                                attrs: { href: _vm.route("login") }
+                              },
+                              [_vm._v("Login here")]
+                            ),
+                            _vm._v(
+                              " to see all your events and create your own."
+                            )
+                          ])
+                        : _c("p", { staticClass: "text-sm" }, [
+                            _vm._v("It looks like you don't have an account. "),
+                            _c(
+                              "a",
+                              {
+                                staticClass: "underline",
+                                attrs: { href: _vm.route("login") }
+                              },
+                              [_vm._v("Register here")]
+                            ),
+                            _vm._v(
+                              " to see all your events and create your own."
+                            )
+                          ])
+                    ])
+                  ]
+                )
+              : _vm._e()
+          ]
+        },
+        proxy: true
+      },
+      {
         key: "header",
         fn: function() {
           return [
@@ -30925,24 +31159,21 @@ var render = function() {
                         "\n          " +
                           _vm._s(
                             _vm
-                              .dayjs(_vm.event.start_date, "YYYY-MM-DD H:mm:ss")
+                              .dayjs(_vm.event.start_date)
                               .format("MMMM D, YYYY [at] h:mma")
                           ) +
                           "\n        "
                       )
                     ]
                   : _vm
-                      .dayjs(_vm.event.start_date, "YYYY-MM-DD H:mm:ss")
-                      .isSame(
-                        _vm.dayjs(_vm.event.end_date, "YYYY-MM-DD H:mm:ss"),
-                        "day"
-                      )
+                      .dayjs(_vm.event.start_date)
+                      .isSame(_vm.dayjs(_vm.event.end_date), "day")
                   ? [
                       _vm._v(
                         "\n          " +
                           _vm._s(
                             _vm
-                              .dayjs(_vm.event.start_date, "YYYY-MM-DD H:mm:ss")
+                              .dayjs(_vm.event.start_date)
                               .format("MMMM D, YYYY")
                           ) +
                           "\n          "
@@ -30951,15 +31182,11 @@ var render = function() {
                       _vm._v(
                         "\n          " +
                           _vm._s(
-                            _vm
-                              .dayjs(_vm.event.start_date, "YYYY-MM-DD H:mm:ss")
-                              .format("h:mma")
+                            _vm.dayjs(_vm.event.start_date).format("h:mma")
                           ) +
                           " - " +
                           _vm._s(
-                            _vm
-                              .dayjs(_vm.event.end_date, "YYYY-MM-DD H:mm:ss")
-                              .format("h:mma")
+                            _vm.dayjs(_vm.event.end_date).format("h:mma")
                           ) +
                           "\n        "
                       )
@@ -30969,7 +31196,7 @@ var render = function() {
                         "\n          " +
                           _vm._s(
                             _vm
-                              .dayjs(_vm.event.start_date, "YYYY-MM-DD H:mm:ss")
+                              .dayjs(_vm.event.start_date)
                               .format("MMMM D, YYYY [at] h:mma")
                           ) +
                           " -\n          "
@@ -30979,7 +31206,7 @@ var render = function() {
                         "\n          " +
                           _vm._s(
                             _vm
-                              .dayjs(_vm.event.end_date, "YYYY-MM-DD H:mm:ss")
+                              .dayjs(_vm.event.end_date)
                               .format("MMMM D, YYYY [at] h:mma")
                           ) +
                           "\n        "

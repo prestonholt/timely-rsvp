@@ -18,17 +18,17 @@
           <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
         </svg>
         <template v-if="!event.end_date">
-          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }}
+          {{ dayjs(event.start_date).format('MMMM D, YYYY [at] h:mma') }}
         </template>
-        <template v-else-if="dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').isSame(dayjs(event.end_date, 'YYYY-MM-DD H:mm:ss'), 'day')">
-          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY') }}
+        <template v-else-if="dayjs(event.start_date).isSame(dayjs(event.end_date), 'day')">
+          {{ dayjs(event.start_date).format('MMMM D, YYYY') }}
           <br>
-          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('h:mma') }} - {{ dayjs(event.end_date, 'YYYY-MM-DD H:mm:ss').format('h:mma') }}
+          {{ dayjs(event.start_date).format('h:mma') }} - {{ dayjs(event.end_date).format('h:mma') }}
         </template>
         <template v-else>
-          {{ dayjs(event.start_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }} -
+          {{ dayjs(event.start_date).format('MMMM D, YYYY [at] h:mma') }} -
           <br>
-          {{ dayjs(event.end_date, 'YYYY-MM-DD H:mm:ss').format('MMMM D, YYYY [at] h:mma') }}
+          {{ dayjs(event.end_date).format('MMMM D, YYYY [at] h:mma') }}
         </template>
         
       </div>
@@ -96,16 +96,16 @@
 									          	<div class="text-sm leading-5 font-medium text-gray-900">
 								              	<a class="hover:underline" @click.stop :href="'sms://' + invite.contact.phone">{{ invite.contact.name }}</a>
 								            	</div>
-									            <div v-if="dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').isAfter(dayjs(), 'minute') && invite.accepted === null" class="text-sm leading-5 text-gray-500">
-									              Expires {{ dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').fromNow() }}
+									            <div v-if="dayjs(invite.expiration).isAfter(dayjs(), 'minute') && invite.accepted === null" class="text-sm leading-5 text-gray-500">
+									              Expires {{ dayjs(invite.expiration).fromNow() }}
 									            </div>
-									            <div v-else-if="dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').isAfter(dayjs(), 'minute') && invite.accepted !== null" class="text-sm leading-5 text-gray-500">
-									              Locking response {{ dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').fromNow() }}
+									            <div v-else-if="dayjs(invite.expiration).isAfter(dayjs(), 'minute') && invite.accepted !== null" class="text-sm leading-5 text-gray-500">
+									              Locking response {{ dayjs(invite.expiration).fromNow() }}
 									            </div>
-									            <div v-else-if="!dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').isAfter(dayjs(), 'minute') && invite.accepted === null" class="text-sm leading-5 text-red-500">
+									            <div v-else-if="!dayjs(invite.expiration).isAfter(dayjs(), 'minute') && invite.accepted === null" class="text-sm leading-5 text-red-500">
 									            	Invitaton Expired
 									            </div>
-									            <div v-else-if="!dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').isAfter(dayjs(), 'minute') && invite.accepted !== null" class="text-sm leading-5 text-gray-500">
+									            <div v-else-if="!dayjs(invite.expiration).isAfter(dayjs(), 'minute') && invite.accepted !== null" class="text-sm leading-5 text-gray-500">
 									            	Response Locked
 									            </div>
 									          </div>
@@ -186,7 +186,7 @@
 	        <jet-input-error :message="form.error('phone')" class="mt-2" />
         </div>
 
-        <div class="col-span-6 sm:col-span-4">
+        <div class="col-span-6 sm:col-span-4 pb-4">
         	<jet-label for="expiration_date" value="Expiration Date and Time" />
         	<div class="flex flex-wrap">
         		<div class="flex flex-auto">
@@ -198,6 +198,20 @@
 		      </div>
 		      <jet-input-error :message="form.error('expiration_date')" class="mt-2" />
 		      <jet-input-error :message="form.error('expiration_time')" class="mt-2" />
+        </div>
+
+        <div class="col-span-6 sm:col-span-4">
+          <div class="flex">
+            <div class="flex flex-auto">
+              <p class="my-auto text-sm text-gray-600">
+                Send Invite Notification
+              </p>
+            </div>
+            <div class="flex">
+              <t-toggle v-model="form.send_invite" />
+            </div>
+          </div>
+          <p v-if="!form.send_invite" class="mt-1 text-sm text-gray-800">When this is disabled, you will be given a link to send them in order to respond to your invitation.</p>
         </div>
 
       </template>
@@ -266,6 +280,32 @@
         <jet-button type="submit" class="ml-2" @click.native="updateInvite" :class="{ 'opacity-25': editInviteForm.processing }" :disabled="editInviteForm.processing">
           Update
         </jet-button>
+      </template>
+    </jet-dialog-modal>
+
+    <!-- Display Invite Link -->
+    <jet-dialog-modal :show="displayLink" @close="displayLink = false">
+      <template #title>
+        Invitation Link
+      </template>
+
+      <template #content>
+        Unique Invitation for {{ form.name }}:
+        <div class="mt-2 mb-2 flex items-center text-sm leading-5 px-2 py-1 border border-gray-300 rounded-md bg-gray-100">
+          <div class="text-gray-500">
+            {{ invite_url }}
+          </div>
+        </div>
+
+        <a :href="inviteMessage" class="inline-flex items-center px-3 py-1 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 transition ease-in-out fduration-150">Compose Message</a>
+
+
+      </template>
+
+      <template #footer>
+        <jet-secondary-button @click.native="displayLink = false">
+          Close
+        </jet-secondary-button>
       </template>
     </jet-dialog-modal>
 
@@ -403,10 +443,12 @@
     		showContactOptions: false,
     		editingInvite: false,
     		editingEvent: false,
+        displayLink: false,
 
         form: this.$inertia.form({
           name: '',
           phone: '',
+          send_invite: true,
           expiration_date: '',
           expiration_time: ''
         }, {
@@ -439,6 +481,7 @@
           bag: 'editEvent',
           resetOnSuccess: true,
         }),
+
     	}
     },
 
@@ -450,13 +493,16 @@
     },
 
     mounted() {
-    	this.form.expiration_date = this.dayjs(this.event.start_date, 'YYYY-MM-DD H:mm:ss').subtract(1, 'day').format('YYYY-MM-DD');
-    	this.form.expiration_time = this.dayjs(this.event.start_date, 'YYYY-MM-DD H:mm:ss').format('h:mm A');
+    	this.form.expiration_date = this.dayjs(this.event.start_date).subtract(1, 'day').format('YYYY-MM-DD');
+    	this.form.expiration_time = this.dayjs(this.event.start_date).format('h:mm A');
     },
 
     props: {
     	event: Object,
     	invites: Array,
+      invite_url: {
+        default: null
+      }
     },
 
     watch: {
@@ -467,7 +513,7 @@
     	'editEventForm.end_toggle': function (newValue, oldValue) {
     		if (newValue == true) {
     			if (this.editEventForm.start_date && this.editEventForm.start_time)
-    				var date = this.dayjs(this.editEventForm.start_date + ' ' + this.editEventForm.start_time, 'YYYY-MM-DD h:mm A');
+    				var date = this.dayjs(this.editEventForm.start_date + ' ' + this.editEventForm.start_time);
     			else if (this.editEventForm.start_date)
     				var date = this.dayjs(this.editEventForm.start_date, 'YYYY-MM-DD');
     			else if (this.editEventForm.start_time) 
@@ -513,6 +559,10 @@
           return invite.accepted === false;
         }).length;
       },
+
+      inviteMessage() {
+        return 'sms:/' + this.form.phone + '&body=' + this.invite_url;
+      },
     },
 
     methods: {
@@ -520,7 +570,7 @@
       invite() {
 	      this.form.name = '';
 	      this.form.phone = '';
-
+        this.form.send_invite = true;
 	      this.sendingInvite = true;
 	      
 	      this.contactOptions = [];
@@ -536,7 +586,10 @@
           preserveScroll: true,
         }).then(response => {
             if (!this.form.hasErrors()) {
-            this.sendingInvite = false;
+              this.sendingInvite = false;
+
+              if (!this.form.send_invite)
+                this.displayLink = true;
           }
         })
 	    },
@@ -565,8 +618,8 @@
 	    	this.editInviteForm.id = invite.id;
 	    	this.editInviteForm.name = invite.contact.name;
 	    	this.editInviteForm.phone = this.prettyNumber(invite.contact.phone);
-	    	this.editInviteForm.expiration_date = this.dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').format('YYYY-MM-DD');
-	    	this.editInviteForm.expiration_time = this.dayjs(invite.expiration, 'YYYY-MM-DD H:mm:ss').format('h:mm A');
+	    	this.editInviteForm.expiration_date = this.dayjs(invite.expiration).format('YYYY-MM-DD');
+	    	this.editInviteForm.expiration_time = this.dayjs(invite.expiration).format('h:mm A');
 	    },
 
 	    updateInvite() {
@@ -595,12 +648,12 @@
 
 	    	this.editEventForm.id = this.event.id;
 	    	this.editEventForm.name = this.event.name;
-	    	this.editEventForm.start_date = this.dayjs(this.event.start_date, 'YYYY-MM-DD H:mm:ss').format('YYYY-MM-DD');
-	    	this.editEventForm.start_time = this.dayjs(this.event.start_date, 'YYYY-MM-DD H:mm:ss').format('h:mm A');
+	    	this.editEventForm.start_date = this.dayjs(this.event.start_date).format('YYYY-MM-DD');
+	    	this.editEventForm.start_time = this.dayjs(this.event.start_date).format('h:mm A');
 	    	this.editEventForm.end_toggle = !!this.event.end_date;
 	    	if (this.editEventForm.end_toggle) {
-	    		this.editEventForm.end_date = this.dayjs(this.event.end_date, 'YYYY-MM-DD H:mm:ss').format('YYYY-MM-DD');
-	    		this.editEventForm.end_time = this.dayjs(this.event.end_date, 'YYYY-MM-DD H:mm:ss').format('h:mm A');
+	    		this.editEventForm.end_date = this.dayjs(this.event.end_date).format('YYYY-MM-DD');
+	    		this.editEventForm.end_time = this.dayjs(this.event.end_date).format('h:mm A');
 	    	}
 	    	this.editEventForm.location = this.event.location;
 	    	this.editEventForm.description = this.event.description;

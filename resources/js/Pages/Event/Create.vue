@@ -119,7 +119,7 @@
     	'form.end_toggle': function (newValue, oldValue) {
     		if (newValue == true) {
     			if (this.form.start_date && this.form.start_time)
-    				var date = dayjs(this.form.start_date + ' ' + this.form.start_time, 'YYYY-MM-DD h:mm A');
+    				var date = dayjs(this.form.start_date + ' ' + this.form.start_time);
     			else if (this.form.start_date)
     				var date = dayjs(this.form.start_date, 'YYYY-MM-DD');
     			else if (this.form.start_time) 
