@@ -30,7 +30,7 @@ class PhoneVerificationPromptController extends Controller
         }
 
         // Validate code before marking as verified
-        $request->validate([
+        $request->validateWithBag('verification', [
             'verification_code' => ['bail', 'required', 'integer', 'digits:6', new VerificationCode($request->user()->verification_code)],
         ]);
 

@@ -75,7 +75,7 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         Fortify::verifyEmailView(function () {
-            return Inertia::render('Auth/VerifyEmail', [
+            return Inertia::render('Auth/VerifyPhone', [
                 'status' => session('status'),
             ]);
         });

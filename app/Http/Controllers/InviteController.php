@@ -25,7 +25,7 @@ class InviteController extends Controller
 
     	Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', new PhoneNumber/*, new ExcludeThisPhone($request->user()->phone)*/],
+            'phone' => ['required', new PhoneNumber, new ExcludeThisPhone($request->user()->phone)],
             'expiration_date' => ['required', 'date'],
             'expiration_time' => ['required', 'date_format:g:i A'],
         ])->validateWithBag('sendInvite');

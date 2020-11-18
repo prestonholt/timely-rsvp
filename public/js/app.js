@@ -3914,9 +3914,13 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Jetstream_AuthenticationCard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Jetstream/AuthenticationCard */ "./resources/js/Jetstream/AuthenticationCard.vue");
-/* harmony import */ var _Jetstream_AuthenticationCardLogo__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Jetstream/AuthenticationCardLogo */ "./resources/js/Jetstream/AuthenticationCardLogo.vue");
-/* harmony import */ var _Jetstream_Button__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../Jetstream/Button */ "./resources/js/Jetstream/Button.vue");
+/* harmony import */ var _Jetstream_AuthenticationCard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/Jetstream/AuthenticationCard */ "./resources/js/Jetstream/AuthenticationCard.vue");
+/* harmony import */ var _Jetstream_AuthenticationCardLogo__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @/Jetstream/AuthenticationCardLogo */ "./resources/js/Jetstream/AuthenticationCardLogo.vue");
+/* harmony import */ var _Jetstream_Button__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @/Jetstream/Button */ "./resources/js/Jetstream/Button.vue");
+/* harmony import */ var _Jetstream_SecondaryButton__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @/Jetstream/SecondaryButton */ "./resources/js/Jetstream/SecondaryButton.vue");
+/* harmony import */ var _Jetstream_Label__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @/Jetstream/Label */ "./resources/js/Jetstream/Label.vue");
+/* harmony import */ var _Jetstream_Input__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @/Jetstream/Input */ "./resources/js/Jetstream/Input.vue");
+/* harmony import */ var _Jetstream_InputError__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @/Jetstream/InputError */ "./resources/js/Jetstream/InputError.vue");
 //
 //
 //
@@ -3942,6 +3946,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
 
 
 
@@ -3949,17 +3971,22 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     JetAuthenticationCard: _Jetstream_AuthenticationCard__WEBPACK_IMPORTED_MODULE_0__["default"],
     JetAuthenticationCardLogo: _Jetstream_AuthenticationCardLogo__WEBPACK_IMPORTED_MODULE_1__["default"],
-    JetButton: _Jetstream_Button__WEBPACK_IMPORTED_MODULE_2__["default"]
+    JetButton: _Jetstream_Button__WEBPACK_IMPORTED_MODULE_2__["default"],
+    JetSecondaryButton: _Jetstream_SecondaryButton__WEBPACK_IMPORTED_MODULE_3__["default"],
+    JetLabel: _Jetstream_Label__WEBPACK_IMPORTED_MODULE_4__["default"],
+    JetInput: _Jetstream_Input__WEBPACK_IMPORTED_MODULE_5__["default"],
+    JetInputError: _Jetstream_InputError__WEBPACK_IMPORTED_MODULE_6__["default"]
   },
   props: {
     status: String
   },
   data: function data() {
     return {
-      form: this.$inertia.form({
-        phone: '',
-        password: '',
-        remember: false
+      form: this.$inertia.form(),
+      verificationForm: this.$inertia.form({
+        verification_code: ''
+      }, {
+        bag: 'verification'
       })
     };
   },
@@ -3967,10 +3994,8 @@ __webpack_require__.r(__webpack_exports__);
     submit: function submit() {
       this.form.post(this.route('verification.send'));
     },
-    logout: function logout() {
-      axios.post(this.route('logout')).then(function (response) {
-        window.location = '/';
-      });
+    verificationFormSubmit: function verificationFormSubmit() {
+      this.verificationForm.post(this.route('verification.verify'));
     }
   },
   computed: {
@@ -28156,7 +28181,12 @@ var render = function() {
               _vm._v(" "),
               _c("jet-phone-input", {
                 staticClass: "mt-1 block w-full",
-                attrs: { id: "phone", required: "", autofocus: "" },
+                attrs: {
+                  id: "phone",
+                  required: "",
+                  autofocus: "",
+                  autocomplete: "username"
+                },
                 model: {
                   value: _vm.form.phone,
                   callback: function($$v) {
@@ -28368,7 +28398,7 @@ var render = function() {
               _vm._v(" "),
               _c("jet-phone-input", {
                 staticClass: "mt-1 block w-full",
-                attrs: { id: "phone", required: "" },
+                attrs: { id: "phone", required: "", autocomplete: "username" },
                 model: {
                   value: _vm.form.phone,
                   callback: function($$v) {
@@ -28531,7 +28561,12 @@ var render = function() {
               _vm._v(" "),
               _c("jet-phone-input", {
                 staticClass: "mt-1 block w-full",
-                attrs: { id: "phone", required: "", autofocus: "" },
+                attrs: {
+                  id: "phone",
+                  required: "",
+                  autofocus: "",
+                  autocomplete: "username"
+                },
                 model: {
                   value: _vm.form.phone,
                   callback: function($$v) {
@@ -28663,7 +28698,7 @@ var render = function() {
       _vm._v(" "),
       _c("div", { staticClass: "mb-4 text-sm text-gray-600" }, [
         _vm._v(
-          "\n        Thanks for signing up! Before getting started, enter the verification code sent to your phone number. If you didn\\'t receive the text message, we will gladly send you another.\n    "
+          "\n        Thanks for signing up! Before getting started, enter the verification code sent to your phone number. If you didn't receive the text message, we will gladly send you another.\n    "
         )
       ]),
       _vm._v(" "),
@@ -28685,6 +28720,76 @@ var render = function() {
           on: {
             submit: function($event) {
               $event.preventDefault()
+              return _vm.verificationFormSubmit($event)
+            }
+          }
+        },
+        [
+          _c(
+            "div",
+            { staticClass: "mt-4 pb-2" },
+            [
+              _c("jet-label", {
+                attrs: { for: "verification_code", value: "Verification Code" }
+              }),
+              _vm._v(" "),
+              _c("jet-input", {
+                staticClass: "mt-1 block w-full capitalize",
+                attrs: {
+                  id: "verification_code",
+                  type: "text",
+                  required: "",
+                  autofocus: "",
+                  inputmode: "numeric",
+                  pattern: "[0-9]*",
+                  autocomplete: "one-time-code"
+                },
+                model: {
+                  value: _vm.verificationForm.verification_code,
+                  callback: function($$v) {
+                    _vm.$set(_vm.verificationForm, "verification_code", $$v)
+                  },
+                  expression: "verificationForm.verification_code"
+                }
+              }),
+              _vm._v(" "),
+              _c("jet-input-error", {
+                staticClass: "mt-2",
+                attrs: {
+                  message: _vm.verificationForm.error("verification_code")
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "flex pt-2 justify-end" },
+                [
+                  _c(
+                    "jet-button",
+                    {
+                      class: { "opacity-25": _vm.verificationForm.processing },
+                      attrs: {
+                        type: "submit",
+                        disabled: _vm.verificationForm.processing
+                      }
+                    },
+                    [_vm._v("\n                Submit\n                ")]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "form",
+        {
+          on: {
+            submit: function($event) {
+              $event.preventDefault()
               return _vm.submit($event)
             }
           }
@@ -28695,30 +28800,20 @@ var render = function() {
             { staticClass: "mt-4 flex items-center justify-between" },
             [
               _c(
-                "jet-button",
+                "jet-secondary-button",
                 {
                   class: { "opacity-25": _vm.form.processing },
                   attrs: { disabled: _vm.form.processing }
                 },
-                [
-                  _vm._v(
-                    "\n                Resend Verification Code\n            "
-                  )
-                ]
+                [_vm._v("\n                Resend Code\n            ")]
               ),
               _vm._v(" "),
               _c(
-                "a",
+                "inertia-link",
                 {
                   staticClass:
                     "underline text-sm text-gray-600 hover:text-gray-900",
-                  attrs: { href: _vm.route("logout") },
-                  on: {
-                    click: function($event) {
-                      $event.preventDefault()
-                      return _vm.logout($event)
-                    }
-                  }
+                  attrs: { href: _vm.route("logout"), method: "post" }
                 },
                 [_vm._v("Logout")]
               )

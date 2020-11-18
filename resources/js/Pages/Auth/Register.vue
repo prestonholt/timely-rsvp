@@ -14,7 +14,7 @@
 
             <div class="mt-4">
                 <jet-label for="phone" value="Phone Number" />
-                <jet-phone-input id="phone" class="mt-1 block w-full" v-model="form.phone" required />
+                <jet-phone-input id="phone" class="mt-1 block w-full" v-model="form.phone" required autocomplete="username" />
             </div>
 
             <div class="mt-4">
