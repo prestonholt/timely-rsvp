@@ -10,7 +10,7 @@ use NotificationChannels\Twilio\TwilioChannel;
 use NotificationChannels\Twilio\TwilioSmsMessage;
 use App\Models\ShortUrl;
 
-class InviteSent extends Notification
+class InviteSent extends Notification implements ShouldQueue
 {
     use Queueable;
 
