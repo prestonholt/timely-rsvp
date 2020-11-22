@@ -70,6 +70,10 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\Event');
     }
 
+    public function activeEvents() {
+        return $this->events()->where('start_date', '>=', date("Y-m-d H:i:s"));
+    }
+
     public function contacts() {
         return $this->hasMany('App\Models\Contact');
     }
@@ -82,6 +86,8 @@ class User extends Authenticatable
         $invites = Invite::whereIn('contact_id', $contacts)->where(function ($query) {
             $query->where('expiration', '>=', date("Y-m-d H:i:s"))->orWhere('accepted', true);
         })->with(['event', 'event.user'])->get()->sortByDesc('event.start_date')->values();
+
+        // Need to not return invites for events that have ended
 
         return $invites;
     }

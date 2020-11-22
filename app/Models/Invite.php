@@ -7,11 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use App\Models\ShortUrl;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Carbon;
 
 class Invite extends Model
 {
     use HasFactory;
     use Notifiable;
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['has_expired'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -71,5 +79,16 @@ class Invite extends Model
     public function shortUrl()
     {
         return $this->morphOne('App\Models\ShortUrl', 'linkable');
+    }
+
+    public function getHasExpiredAttribute() {
+        return $this->expiration ? $this->expiration->lt(Carbon::now()) : false;
+    }
+
+    public function getCanViewAttribute() {
+        if ($this->has_expired && $this->accepted !== true)
+            return false;
+
+        return true;
     }
 }

@@ -149,7 +149,7 @@
       <template #content>
         <div class="col-span-6 sm:col-span-4">
 	        <jet-label for="name" value="Name" />
-	        <jet-input id="name" type="text" class="mt-1 block w-full capitalize" v-model="form.name" @focus.native="showContactOptions=true" @blur.native="showContactOptions=false" ref="name" placeholder="Full Name" autocomplete="off" />
+	        <jet-input id="name" type="text" class="mt-1 block w-full capitalize" v-model="form.name" @focus.native="showContactOptions=true" @blur.native="showContactOptions=false" ref="name" placeholder="Full Name" autocapitalize="word" autocomplete="off" />
 	        <jet-input-error :message="form.error('name')" class="mt-2" />
 	        <jet-input-error :message="form.error('duplicate')" class="mt-2" />
         </div>

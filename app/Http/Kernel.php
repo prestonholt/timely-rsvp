@@ -62,5 +62,7 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \App\Http\Middleware\EnsurePhoneIsVerified::class,
+        'event.ended' => \App\Http\Middleware\CheckEventEnded::class,
+        'invite.expired' => \App\Http\Middleware\CheckInviteExpired::class,
     ];
 }

@@ -1,5 +1,15 @@
 <template>
   <app-layout>
+  	<template #banner>
+      <div v-if="status" class="bg-indigo-100 border-t-2 border-indigo-500 rounded-b px-4 py-3 shadow-md" role="alert">
+        <div class="flex">
+          <p v-if="status == 'event-ended'" class="text-sm">It looks like the event you are trying to access has ended.</p>
+          <p v-if="status == 'invite-expired'" class="text-sm">It looks like that invitation has expired.</p>
+        </div>
+      </div>
+    </div>
+    </template>
+
     <template #header>
     	<div class="flex justify-between">
     		<div class="my-auto">
@@ -106,6 +116,7 @@
     props: {
     	events: Array,
     	invites: Array,
+    	status: String,
     },
 
     data: function() {

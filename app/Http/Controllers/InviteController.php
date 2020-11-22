@@ -26,7 +26,7 @@ class InviteController extends Controller
     	Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', new PhoneNumber, new ExcludeThisPhone($request->user()->phone)],
-            'expiration_date' => ['required', 'date'],
+            'expiration_date' => ['required', 'date', 'after_or_equal:now'],
             'expiration_time' => ['required', 'date_format:g:i A'],
         ])->validateWithBag('sendInvite');
 
@@ -74,7 +74,7 @@ class InviteController extends Controller
 
     	Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
-            'expiration_date' => ['required', 'date'],
+            'expiration_date' => ['required', 'date', 'after_or_equal:now'],
             'expiration_time' => ['required', 'date_format:g:i A'],
         ])->validateWithBag('sendInvite');
 
@@ -108,6 +108,14 @@ class InviteController extends Controller
 
         if (Auth::check() && $request->user()->hasBeenInvitedTo($invite->event)) {
             return redirect()->route('event.view', [$invite->event]);
+        }
+
+        if ($invite->event->has_ended) {
+            return Inertia::render('Error', ['status' => 491]);
+        }
+
+        if (!$invite->can_view) {
+            return Inertia::render('Error', ['status' => 490]);
         }
 
         // Check if they are logged in. If so, check whether logged in phone number is same as invite contact phone number

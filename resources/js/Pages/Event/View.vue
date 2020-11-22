@@ -85,7 +85,23 @@
       </div>
     </template>
 		
-
+    <div class="px-4 py-5 sm:p-6 bg-white shadow sm:rounded-lg">
+      <div class="flex justify-center">
+        <div class="flex m-2">
+          <button @click="accept" :class="{ 'opacity-50': false }" :disabled="false" class="text-base rounded-r-none focus:outline-none flex justify-center px-4 py-2 rounded font-bold bg-green-100 active:bg-green-200 text-green-800 border border-green-600">
+                <div class="flex leading-5">
+                  Accept
+                </div>
+            </button>
+          
+            <button @click="decline" class="text-base rounded-l-none focus:outline-none flex justify-center px-4 py-2 rounded font-bold bg-red-100 active:bg-red-200 text-red-800 border border-l-0 border-red-600">
+                <div class="flex leading-5">
+                  Decline
+                </div>
+            </button>
+        </div>
+      </div>
+    </div>
 	</app-layout>
 </template>
 

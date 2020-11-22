@@ -24,8 +24,9 @@ class EventController extends Controller
     public function index(Request $request)
     {
         return Inertia::render('Home', [
-            'events' => $request->user()->events()->get(['id', 'name', 'start_date']),
-            'invites' => $request->user()->invites()
+            'events' => $request->user()->activeEvents()->get(['id', 'name', 'start_date']),
+            'invites' => $request->user()->invites(),
+            'status' => session('status'),
         ]);
     }
 
@@ -49,7 +50,7 @@ class EventController extends Controller
     {
         Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
-            'start_date' => ['required', 'date'],
+            'start_date' => ['required', 'date', 'after_or_equal:now'],
             'start_time' => ['required', 'date_format:g:i A'],
             'end_date' => ['nullable', 'required_if:end_toggle,true','date', 'after_or_equal:start_date'],
             'end_time' => ['nullable', 'required_if:end_toggle,true','date_format:g:i A']

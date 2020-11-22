@@ -31,6 +31,12 @@ task('build', function () {
     run('cd {{release_path}} && build');
 });
 
+// Reload supervisor
+
+task('supervisor:reload', function () {
+    run("cd {{release_path}} && supervisorctl reload");
+});
+
 // [Optional] if deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
 

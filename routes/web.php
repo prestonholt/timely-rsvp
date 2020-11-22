@@ -35,14 +35,21 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/', [EventController::class, 'index'])
         ->name('home');
 
-    Route::get('/event/view/{event}', [EventController::class, 'show'])
-        ->name('event.view');
-
     Route::get('/event/create', [EventController::class, 'create'])
         ->name('event.create');
 
     Route::post('/event/store', [EventController::class, 'store'])
         ->name('event.store');
+
+    Route::get('/contacts/search', [ContactController::class, 'search'])
+        ->name('contacts.search');
+    
+});
+
+Route::group(['middleware' => ['auth', 'verified', 'event.ended']], function () {
+    Route::get('/event/view/{event}', [EventController::class, 'show'])
+        ->middleware('invite.expired')
+        ->name('event.view');
 
     Route::get('/event/details/{event}', [EventController::class, 'details'])
         ->name('event.details');
@@ -67,11 +74,6 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     Route::delete('/event/edit/{event}/invite/{invite}/delete', [InviteController::class, 'delete'])
         ->name('event.invite.delete');
-
-    Route::get('/contacts/search', [ContactController::class, 'search'])
-        ->name('contacts.search');
-
-    
 });
 
 Route::get('/invite/{invite}', [InviteController::class, 'show'])
