@@ -43,6 +43,9 @@ task('npm', function () {
     run("cd {{release_path}} && npm ci && npm run prod");
 });
 
+before('deploy:symlink', 'supervisor');
+before('deploy:symlink', 'npm');
+
 // [Optional] if deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
 
