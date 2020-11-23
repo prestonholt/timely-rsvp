@@ -9,6 +9,8 @@ use App\Models\Invite;
 use Illuminate\Support\Facades\Validator;
 use App\Models\ShortUrl;
 use Illuminate\Support\Carbon;
+use Spatie\IcalendarGenerator\Components\Calendar;
+use Spatie\IcalendarGenerator\Components\Event as CalendarEvent;
 
 class EventController extends Controller
 {
@@ -107,7 +109,11 @@ class EventController extends Controller
         return Inertia::render('Event/View', [
             'event' => $event->load('user'),
             'invites' => $event->invites()->with('contact:id,name')->get(),
-            'invite' => $request->user()->getInviteForEvent($event)
+            'invite' => $request->user()->getInviteForEvent($event),
+            'routes' => [
+                'respond' => route('invite.respond', $request->user()->getInviteForEvent($event)),
+                'calendar' => route('invite.calendar', $request->user()->getInviteForEvent($event))
+            ]
         ]);
     }
 
@@ -172,5 +178,31 @@ class EventController extends Controller
         $event->delete();
 
         return redirect()->route('home');
+    }
+
+    public function calendar(Request $request, Event $event) {
+        $this->authorize('update', $event);
+
+        $calEvent = CalendarEvent::create($event->name)
+            ->startsAt($event->start_date);
+
+        if ($event->end_date)
+            $calEvent->endsAt($event->end_date);
+        else
+            $event->endsAt($event->start_date->addHour()->addMinutes(30));
+
+
+        if ($event->description)
+            $calEvent->description($event->description);
+
+        $calendar = Calendar::create('TimelyRSVP')
+            ->withTimezone()
+            ->event($calEvent);
+
+        return response($calendar->get(), 200, [
+           'Content-Type' => 'text/calendar',
+           'Content-Disposition' => 'attachment; filename="timelyrsvp' . $event->id . '.ics"',
+           'charset' => 'utf-8',
+        ]);
     }
 }

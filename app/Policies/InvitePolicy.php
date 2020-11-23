@@ -35,4 +35,16 @@ class InvitePolicy
         return $user->id == $invite->event->user->id;
     }
 
+    /**
+     * Determine whether the user can respond to the invite.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Event  $event
+     * @return mixed
+     */
+    public function respond(User $user, Invite $invite)
+    {
+        return $user->phone == $invite->contact->phone;
+    }
+
 }

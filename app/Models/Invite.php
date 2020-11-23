@@ -86,9 +86,9 @@ class Invite extends Model
     }
 
     public function getCanViewAttribute() {
-        if ($this->has_expired && $this->accepted !== true)
-            return false;
+        if (!$this->has_expired || $this->accepted == true)
+            return true;
 
-        return true;
+        return false;
     }
 }

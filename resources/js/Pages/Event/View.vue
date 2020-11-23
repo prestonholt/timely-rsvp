@@ -24,6 +24,7 @@
         <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
         </svg>
+        <a class="hover:underline" :href="routes.calendar">
         <template v-if="!event.end_date">
           {{ dayjs(event.start_date).format('MMMM D, YYYY [at] h:mma') }}
         </template>
@@ -37,6 +38,7 @@
           <br>
           {{ dayjs(event.end_date).format('MMMM D, YYYY [at] h:mma') }}
         </template>
+        </a>
         
       </div>
 
@@ -56,7 +58,7 @@
         {{ event.location }}
       </div>
 
-      <!-- Responses Icon and Text -->
+      <!-- Responses Icon and Text 
       <div v-if="numberPending || numberAccepted || numberDeclined" class="mt-2 flex flex-wrap items-center text-sm leading-5 text-gray-500">
         <template v-if="numberPending">
           <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -77,6 +79,7 @@
           {{ numberDeclined }} Declined
         </template>
       </div>
+      -->
 
       <div v-if="event.description" class="mt-2 flex items-center text-sm leading-5 px-2 py-1 border border-gray-300 rounded-md bg-gray-100">
         <div class="text-gray-500">
@@ -88,19 +91,22 @@
     <div class="px-4 py-5 sm:p-6 bg-white shadow sm:rounded-lg">
       <div class="flex justify-center">
         <div class="flex m-2">
-          <button @click="accept" :class="{ 'opacity-50': false }" :disabled="false" class="text-base rounded-r-none focus:outline-none flex justify-center px-4 py-2 rounded font-bold bg-green-100 active:bg-green-200 text-green-800 border border-green-600">
-                <div class="flex leading-5">
-                  Accept
-                </div>
+          <button @click="accept" :class="{ 'opacity-50': (form.processing || invite.accepted === true || invite.has_expired) }" :disabled="(form.processing || invite.accepted === true || invite.has_expired)" class="text-base rounded-r-none focus:outline-none flex justify-center w-28 px-4 py-2 rounded font-bold bg-green-100 active:bg-green-200 text-green-800 border border-green-600">
+                <div v-if="invite.accepted === true" class="flex leading-5">Accepted</div>
+                <div v-else class="flex leading-5">Accept</div>
             </button>
           
-            <button @click="decline" class="text-base rounded-l-none focus:outline-none flex justify-center px-4 py-2 rounded font-bold bg-red-100 active:bg-red-200 text-red-800 border border-l-0 border-red-600">
-                <div class="flex leading-5">
-                  Decline
-                </div>
+            <button @click="decline" :class="{ 'opacity-50': (form.processing || invite.accepted === false || invite.has_expired) }" :disabled="(form.processing || invite.accepted === false || invite.has_expired)" class="text-base rounded-l-none focus:outline-none flex justify-center w-28 px-4 py-2 rounded font-bold bg-red-100 active:bg-red-200 text-red-800 border border-l-0 border-red-600">
+                <div v-if="invite.accepted === false" class="flex leading-5">Declined</div>
+                <div v-else class="flex leading-5">Decline</div>
             </button>
         </div>
       </div>
+      <div v-if="invite.accepted === null && !invite.has_expired" class="text-sm text-gray-800">Please respond to this event by {{ dayjs(invite.expiration).format('MMMM D, YYYY [at] h:mma') }}</div>
+      <div v-else-if="invite.accepted !== null && !invite.has_expired" class="text-sm text-gray-800">Thanks for letting them know. You can edit your response until {{ dayjs(invite.expiration).format('MMMM D, YYYY [at] h:mma') }}</div>
+      <div v-else-if="invite.accepted === true && invite.has_expired" class="text-sm text-gray-800">You have accepted this invitation.</div>
+      <div v-if="invite.accepted === true" class="text-sm text-gray-800">Tap the date near the top to add to your calendar.</div>
+
     </div>
 	</app-layout>
 </template>
@@ -136,6 +142,12 @@
     data: function() {
     	return {
     		dayjs: require('dayjs'),
+
+        form: this.$inertia.form({
+          accepted: this.invite.accepted
+        }, {
+          bag: 'response',
+        }),
     	}
     },
 
@@ -148,8 +160,9 @@
       event: Object,
       invites: Array,
       invite: Object,
+      routes: Object,
     },
-
+    /*
     computed: {
       numberPending() {
         return this.invites.filter(function(invite) {
@@ -167,6 +180,30 @@
         return this.invites.filter(function(invite) {
           return invite.accepted === false;
         }).length;
+      },
+    },*/
+
+    methods: {
+      accept() {
+        this.form.accepted = true;
+
+        this.form.put(this.routes.respond, {
+          preserveScroll: true,
+        }).then(response => {
+          if (!this.form.hasErrors()) {
+          }
+        })
+      },
+
+      decline() {
+        this.form.accepted = false;
+
+        this.form.put(this.routes.respond, {
+          preserveScroll: true,
+        }).then(response => {
+          if (!this.form.hasErrors()) {
+          }
+        })
       },
     },
 

@@ -4794,6 +4794,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -5185,6 +5187,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -5212,7 +5220,12 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      dayjs: __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js")
+      dayjs: __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js"),
+      form: this.$inertia.form({
+        accepted: this.invite.accepted
+      }, {
+        bag: 'response'
+      })
     };
   },
   beforeMount: function beforeMount() {
@@ -5223,23 +5236,48 @@ __webpack_require__.r(__webpack_exports__);
   props: {
     event: Object,
     invites: Array,
-    invite: Object
+    invite: Object,
+    routes: Object
   },
+
+  /*
   computed: {
-    numberPending: function numberPending() {
-      return this.invites.filter(function (invite) {
+    numberPending() {
+      return this.invites.filter(function(invite) {
         return invite.accepted === null;
       }).length;
     },
-    numberAccepted: function numberAccepted() {
-      return this.invites.filter(function (invite) {
+     numberAccepted() {
+      return this.invites.filter(function(invite) {
         return invite.accepted === true;
       }).length;
     },
-    numberDeclined: function numberDeclined() {
-      return this.invites.filter(function (invite) {
+     numberDeclined() {
+      return this.invites.filter(function(invite) {
         return invite.accepted === false;
       }).length;
+    },
+  },*/
+  methods: {
+    accept: function accept() {
+      var _this = this;
+
+      this.form.accepted = true;
+      this.form.put(this.routes.respond, {
+        preserveScroll: true
+      }).then(function (response) {
+        if (!_this.form.hasErrors()) {}
+      });
+    },
+    decline: function decline() {
+      var _this2 = this;
+
+      this.form.accepted = false;
+      this.form.put(this.routes.respond, {
+        preserveScroll: true
+      }).then(function (response) {
+        if (!_this2.form.hasErrors()) {}
+      });
     }
   }
 });
@@ -29574,67 +29612,78 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  !_vm.event.end_date
-                    ? [
-                        _vm._v(
-                          "\n          " +
-                            _vm._s(
-                              _vm
-                                .dayjs(_vm.event.start_date)
-                                .format("MMMM D, YYYY [at] h:mma")
-                            ) +
-                            "\n        "
-                        )
-                      ]
-                    : _vm
-                        .dayjs(_vm.event.start_date)
-                        .isSame(_vm.dayjs(_vm.event.end_date), "day")
-                    ? [
-                        _vm._v(
-                          "\n          " +
-                            _vm._s(
-                              _vm
-                                .dayjs(_vm.event.start_date)
-                                .format("MMMM D, YYYY")
-                            ) +
-                            "\n          "
-                        ),
-                        _c("br"),
-                        _vm._v(
-                          "\n          " +
-                            _vm._s(
-                              _vm.dayjs(_vm.event.start_date).format("h:mma")
-                            ) +
-                            " - " +
-                            _vm._s(
-                              _vm.dayjs(_vm.event.end_date).format("h:mma")
-                            ) +
-                            "\n        "
-                        )
-                      ]
-                    : [
-                        _vm._v(
-                          "\n          " +
-                            _vm._s(
-                              _vm
-                                .dayjs(_vm.event.start_date)
-                                .format("MMMM D, YYYY [at] h:mma")
-                            ) +
-                            " -\n          "
-                        ),
-                        _c("br"),
-                        _vm._v(
-                          "\n          " +
-                            _vm._s(
-                              _vm
-                                .dayjs(_vm.event.end_date)
-                                .format("MMMM D, YYYY [at] h:mma")
-                            ) +
-                            "\n        "
-                        )
-                      ]
-                ],
-                2
+                  _c(
+                    "a",
+                    {
+                      staticClass: "hover:underline",
+                      attrs: { href: _vm.route("event.calendar", _vm.event) }
+                    },
+                    [
+                      !_vm.event.end_date
+                        ? [
+                            _vm._v(
+                              "\n          " +
+                                _vm._s(
+                                  _vm
+                                    .dayjs(_vm.event.start_date)
+                                    .format("MMMM D, YYYY [at] h:mma")
+                                ) +
+                                "\n        "
+                            )
+                          ]
+                        : _vm
+                            .dayjs(_vm.event.start_date)
+                            .isSame(_vm.dayjs(_vm.event.end_date), "day")
+                        ? [
+                            _vm._v(
+                              "\n          " +
+                                _vm._s(
+                                  _vm
+                                    .dayjs(_vm.event.start_date)
+                                    .format("MMMM D, YYYY")
+                                ) +
+                                "\n          "
+                            ),
+                            _c("br"),
+                            _vm._v(
+                              "\n          " +
+                                _vm._s(
+                                  _vm
+                                    .dayjs(_vm.event.start_date)
+                                    .format("h:mma")
+                                ) +
+                                " - " +
+                                _vm._s(
+                                  _vm.dayjs(_vm.event.end_date).format("h:mma")
+                                ) +
+                                "\n        "
+                            )
+                          ]
+                        : [
+                            _vm._v(
+                              "\n          " +
+                                _vm._s(
+                                  _vm
+                                    .dayjs(_vm.event.start_date)
+                                    .format("MMMM D, YYYY [at] h:mma")
+                                ) +
+                                " -\n          "
+                            ),
+                            _c("br"),
+                            _vm._v(
+                              "\n          " +
+                                _vm._s(
+                                  _vm
+                                    .dayjs(_vm.event.end_date)
+                                    .format("MMMM D, YYYY [at] h:mma")
+                                ) +
+                                "\n        "
+                            )
+                          ]
+                    ],
+                    2
+                  )
+                ]
               ),
               _vm._v(" "),
               _vm.event.location
@@ -31324,67 +31373,78 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  !_vm.event.end_date
-                    ? [
-                        _vm._v(
-                          "\n          " +
-                            _vm._s(
-                              _vm
-                                .dayjs(_vm.event.start_date)
-                                .format("MMMM D, YYYY [at] h:mma")
-                            ) +
-                            "\n        "
-                        )
-                      ]
-                    : _vm
-                        .dayjs(_vm.event.start_date)
-                        .isSame(_vm.dayjs(_vm.event.end_date), "day")
-                    ? [
-                        _vm._v(
-                          "\n          " +
-                            _vm._s(
-                              _vm
-                                .dayjs(_vm.event.start_date)
-                                .format("MMMM D, YYYY")
-                            ) +
-                            "\n          "
-                        ),
-                        _c("br"),
-                        _vm._v(
-                          "\n          " +
-                            _vm._s(
-                              _vm.dayjs(_vm.event.start_date).format("h:mma")
-                            ) +
-                            " - " +
-                            _vm._s(
-                              _vm.dayjs(_vm.event.end_date).format("h:mma")
-                            ) +
-                            "\n        "
-                        )
-                      ]
-                    : [
-                        _vm._v(
-                          "\n          " +
-                            _vm._s(
-                              _vm
-                                .dayjs(_vm.event.start_date)
-                                .format("MMMM D, YYYY [at] h:mma")
-                            ) +
-                            " -\n          "
-                        ),
-                        _c("br"),
-                        _vm._v(
-                          "\n          " +
-                            _vm._s(
-                              _vm
-                                .dayjs(_vm.event.end_date)
-                                .format("MMMM D, YYYY [at] h:mma")
-                            ) +
-                            "\n        "
-                        )
-                      ]
-                ],
-                2
+                  _c(
+                    "a",
+                    {
+                      staticClass: "hover:underline",
+                      attrs: { href: _vm.routes.calendar }
+                    },
+                    [
+                      !_vm.event.end_date
+                        ? [
+                            _vm._v(
+                              "\n          " +
+                                _vm._s(
+                                  _vm
+                                    .dayjs(_vm.event.start_date)
+                                    .format("MMMM D, YYYY [at] h:mma")
+                                ) +
+                                "\n        "
+                            )
+                          ]
+                        : _vm
+                            .dayjs(_vm.event.start_date)
+                            .isSame(_vm.dayjs(_vm.event.end_date), "day")
+                        ? [
+                            _vm._v(
+                              "\n          " +
+                                _vm._s(
+                                  _vm
+                                    .dayjs(_vm.event.start_date)
+                                    .format("MMMM D, YYYY")
+                                ) +
+                                "\n          "
+                            ),
+                            _c("br"),
+                            _vm._v(
+                              "\n          " +
+                                _vm._s(
+                                  _vm
+                                    .dayjs(_vm.event.start_date)
+                                    .format("h:mma")
+                                ) +
+                                " - " +
+                                _vm._s(
+                                  _vm.dayjs(_vm.event.end_date).format("h:mma")
+                                ) +
+                                "\n        "
+                            )
+                          ]
+                        : [
+                            _vm._v(
+                              "\n          " +
+                                _vm._s(
+                                  _vm
+                                    .dayjs(_vm.event.start_date)
+                                    .format("MMMM D, YYYY [at] h:mma")
+                                ) +
+                                " -\n          "
+                            ),
+                            _c("br"),
+                            _vm._v(
+                              "\n          " +
+                                _vm._s(
+                                  _vm
+                                    .dayjs(_vm.event.end_date)
+                                    .format("MMMM D, YYYY [at] h:mma")
+                                ) +
+                                "\n        "
+                            )
+                          ]
+                    ],
+                    2
+                  )
+                ]
               ),
               _vm._v(" "),
               _c(
@@ -31464,119 +31524,6 @@ var render = function() {
                   )
                 : _vm._e(),
               _vm._v(" "),
-              _vm.numberPending || _vm.numberAccepted || _vm.numberDeclined
-                ? _c(
-                    "div",
-                    {
-                      staticClass:
-                        "mt-2 flex flex-wrap items-center text-sm leading-5 text-gray-500"
-                    },
-                    [
-                      _vm.numberPending
-                        ? [
-                            _c(
-                              "svg",
-                              {
-                                staticClass:
-                                  "flex-shrink-0 h-5 w-5 text-gray-400",
-                                attrs: {
-                                  xmlns: "http://www.w3.org/2000/svg",
-                                  viewBox: "0 0 20 20",
-                                  fill: "currentColor"
-                                }
-                              },
-                              [
-                                _c("path", {
-                                  attrs: {
-                                    "fill-rule": "evenodd",
-                                    d:
-                                      "M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z",
-                                    "clip-rule": "evenodd"
-                                  }
-                                })
-                              ]
-                            ),
-                            _vm._v(
-                              "\n          " +
-                                _vm._s(_vm.numberPending) +
-                                " Pending\n        "
-                            )
-                          ]
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _vm.numberAccepted
-                        ? [
-                            _c(
-                              "svg",
-                              {
-                                staticClass:
-                                  "flex-shrink-0 h-5 w-5 text-gray-400",
-                                class: { "ml-1.5": _vm.numberPending },
-                                attrs: {
-                                  xmlns: "http://www.w3.org/2000/svg",
-                                  viewBox: "0 0 20 20",
-                                  fill: "currentColor"
-                                }
-                              },
-                              [
-                                _c("path", {
-                                  attrs: {
-                                    "fill-rule": "evenodd",
-                                    d:
-                                      "M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z",
-                                    "clip-rule": "evenodd"
-                                  }
-                                })
-                              ]
-                            ),
-                            _vm._v(
-                              "\n          " +
-                                _vm._s(_vm.numberAccepted) +
-                                " Accepted\n        "
-                            )
-                          ]
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _vm.numberDeclined
-                        ? [
-                            _c(
-                              "svg",
-                              {
-                                staticClass:
-                                  "flex-shrink-0 h-5 w-5 text-gray-400",
-                                class: {
-                                  "ml-1.5":
-                                    _vm.numberAccepted || _vm.numberPending
-                                },
-                                attrs: {
-                                  xmlns: "http://www.w3.org/2000/svg",
-                                  viewBox: "0 0 20 20",
-                                  fill: "currentColor"
-                                }
-                              },
-                              [
-                                _c("path", {
-                                  attrs: {
-                                    "fill-rule": "evenodd",
-                                    d:
-                                      "M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z",
-                                    "clip-rule": "evenodd"
-                                  }
-                                })
-                              ]
-                            ),
-                            _vm._v(
-                              "\n          " +
-                                _vm._s(_vm.numberDeclined) +
-                                " Declined\n        "
-                            )
-                          ]
-                        : _vm._e()
-                    ],
-                    2
-                  )
-                : _vm._e(),
-              _vm._v(" "),
               _vm.event.description
                 ? _c(
                     "div",
@@ -31614,19 +31561,29 @@ var render = function() {
                 "button",
                 {
                   staticClass:
-                    "text-base rounded-r-none focus:outline-none flex justify-center px-4 py-2 rounded font-bold bg-green-100 active:bg-green-200 text-green-800 border border-green-600",
-                  class: { "opacity-50": false },
-                  attrs: { disabled: false },
-                  nativeOn: {
-                    click: function($event) {
-                      return _vm.accept($event)
-                    }
-                  }
+                    "text-base rounded-r-none focus:outline-none flex justify-center w-28 px-4 py-2 rounded font-bold bg-green-100 active:bg-green-200 text-green-800 border border-green-600",
+                  class: {
+                    "opacity-50":
+                      _vm.form.processing ||
+                      _vm.invite.accepted === true ||
+                      _vm.invite.has_expired
+                  },
+                  attrs: {
+                    disabled:
+                      _vm.form.processing ||
+                      _vm.invite.accepted === true ||
+                      _vm.invite.has_expired
+                  },
+                  on: { click: _vm.accept }
                 },
                 [
-                  _c("div", { staticClass: "flex leading-5" }, [
-                    _vm._v("\n                  Accept\n                ")
-                  ])
+                  _vm.invite.accepted === true
+                    ? _c("div", { staticClass: "flex leading-5" }, [
+                        _vm._v("Accepted")
+                      ])
+                    : _c("div", { staticClass: "flex leading-5" }, [
+                        _vm._v("Accept")
+                      ])
                 ]
               ),
               _vm._v(" "),
@@ -31634,21 +31591,67 @@ var render = function() {
                 "button",
                 {
                   staticClass:
-                    "text-base rounded-l-none focus:outline-none flex justify-center px-4 py-2 rounded font-bold bg-red-100 active:bg-red-200 text-red-800 border border-l-0 border-red-600",
-                  nativeOn: {
-                    click: function($event) {
-                      return _vm.decline($event)
-                    }
-                  }
+                    "text-base rounded-l-none focus:outline-none flex justify-center w-28 px-4 py-2 rounded font-bold bg-red-100 active:bg-red-200 text-red-800 border border-l-0 border-red-600",
+                  class: {
+                    "opacity-50":
+                      _vm.form.processing ||
+                      _vm.invite.accepted === false ||
+                      _vm.invite.has_expired
+                  },
+                  attrs: {
+                    disabled:
+                      _vm.form.processing ||
+                      _vm.invite.accepted === false ||
+                      _vm.invite.has_expired
+                  },
+                  on: { click: _vm.decline }
                 },
                 [
-                  _c("div", { staticClass: "flex leading-5" }, [
-                    _vm._v("\n                  Decline\n                ")
-                  ])
+                  _vm.invite.accepted === false
+                    ? _c("div", { staticClass: "flex leading-5" }, [
+                        _vm._v("Declined")
+                      ])
+                    : _c("div", { staticClass: "flex leading-5" }, [
+                        _vm._v("Decline")
+                      ])
                 ]
               )
             ])
-          ])
+          ]),
+          _vm._v(" "),
+          _vm.invite.accepted === null && !_vm.invite.has_expired
+            ? _c("div", { staticClass: "text-sm text-gray-800" }, [
+                _vm._v(
+                  "Please respond to this event by " +
+                    _vm._s(
+                      _vm
+                        .dayjs(_vm.invite.expiration)
+                        .format("MMMM D, YYYY [at] h:mma")
+                    )
+                )
+              ])
+            : _vm.invite.accepted !== null && !_vm.invite.has_expired
+            ? _c("div", { staticClass: "text-sm text-gray-800" }, [
+                _vm._v(
+                  "Thanks for letting them know. You can edit your response until " +
+                    _vm._s(
+                      _vm
+                        .dayjs(_vm.invite.expiration)
+                        .format("MMMM D, YYYY [at] h:mma")
+                    )
+                )
+              ])
+            : _vm.invite.accepted === true && _vm.invite.has_expired
+            ? _c("div", { staticClass: "text-sm text-gray-800" }, [
+                _vm._v("You have accepted this invitation.")
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.invite.accepted === true
+            ? _c("div", { staticClass: "text-sm text-gray-800" }, [
+                _vm._v("Tap the date near the top to add to your calendar.")
+              ])
+            : _vm._e()
         ]
       )
     ]

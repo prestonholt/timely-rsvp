@@ -63,6 +63,9 @@ Route::group(['middleware' => ['auth', 'verified', 'event.ended']], function () 
     Route::put('/event/edit/{event}/update', [EventController::class, 'update'])
         ->name('event.update');
 
+    Route::get('/event/edit/{event}/calendar', [EventController::class, 'calendar'])
+        ->name('event.calendar');
+
     Route::delete('/event/edit/{event}/delete', [EventController::class, 'delete'])
         ->name('event.delete');
 
@@ -78,6 +81,12 @@ Route::group(['middleware' => ['auth', 'verified', 'event.ended']], function () 
 
 Route::get('/invite/{invite}', [InviteController::class, 'show'])
         ->name('invite.view');
+
+Route::put('/invite/{invite}/respond', [InviteController::class, 'respond'])
+        ->name('invite.respond');
+
+Route::get('/invite/{invite}/calendar', [InviteController::class, 'calendar'])
+        ->name('invite.calendar');
 
 Route::get('/s/{short_url:short}', [ShortUrlController::class, 'route'])
         ->name('short.route');

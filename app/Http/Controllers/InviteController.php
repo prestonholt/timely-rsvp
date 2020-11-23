@@ -12,6 +12,10 @@ use App\Rules\PhoneNumber;
 use App\Rules\ExcludeThisPhone;
 use Inertia\Inertia;
 use App\Notifications\InviteSent;
+use Illuminate\Support\Facades\URL;
+use Spatie\IcalendarGenerator\Components\Calendar;
+use Spatie\IcalendarGenerator\Components\Event as CalendarEvent;
+
 
 class InviteController extends Controller
 {
@@ -129,7 +133,62 @@ class InviteController extends Controller
         return Inertia::render('Event/View', [
             'event' => $invite->event()->with('user')->first(),
             'invites' => $invite->event->invites()->with('contact:id,name')->get(),
-            'invite' => $invite->load('contact')
+            'invite' => $invite->load('contact'),
+            'routes' => [
+                'respond' => URL::signedRoute('invite.respond', [$invite]),
+                'calendar' => URL::signedRoute('invite.calendar', [$invite])
+            ]
+        ]);
+    }
+
+    public function respond(Request $request, Invite $invite) {
+        if (Auth::check()) {
+            $this->authorize('respond', $invite);
+        } else {
+            if (!$request->hasValidSignature())
+                abort(401);
+        }
+
+        if ($invite->has_expired)
+            return back();
+
+        Validator::make($request->all(), [
+            'accepted' => ['nullable', 'boolean'],
+        ])->validateWithBag('response');
+
+        $invite->accepted = $request->accepted;
+        $invite->save();
+
+        return back();
+    }
+
+    public function calendar(Request $request, Invite $invite) {
+        if (Auth::check()) {
+            $this->authorize('respond', $invite);
+        } else {
+            if (!$request->hasValidSignature())
+                abort(401);
+        }
+
+        $event = CalendarEvent::create($invite->event->name)
+            ->startsAt($invite->event->start_date);
+
+        if ($invite->event->end_date)
+            $event->endsAt($invite->event->end_date);
+        else
+            $event->endsAt($invite->event->start_date->addHour()->addMinutes(30));
+
+        if ($invite->event->description)
+            $event->description($invite->event->description);
+
+        $calendar = Calendar::create('TimelyRSVP')
+            ->withTimezone()
+            ->event($event);
+
+        return response($calendar->get(), 200, [
+           'Content-Type' => 'text/calendar',
+           'Content-Disposition' => 'attachment; filename="timelyrsvp.ics"',
+           'charset' => 'utf-8',
         ]);
     }
 
