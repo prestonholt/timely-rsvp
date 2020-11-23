@@ -189,7 +189,7 @@ class EventController extends Controller
         if ($event->end_date)
             $calEvent->endsAt($event->end_date);
         else
-            $event->endsAt($event->start_date->addHour()->addMinutes(30));
+            $calEvent->endsAt($event->start_date->addHour()->addMinutes(30));
 
 
         if ($event->description)
