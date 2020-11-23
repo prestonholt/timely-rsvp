@@ -12,10 +12,11 @@ use App\Rules\PhoneNumber;
 use App\Rules\ExcludeThisPhone;
 use Inertia\Inertia;
 use App\Notifications\InviteSent;
+use App\Notifications\InviteAccepted;
+use App\Notifications\InviteDeclined;
 use Illuminate\Support\Facades\URL;
 use Spatie\IcalendarGenerator\Components\Calendar;
 use Spatie\IcalendarGenerator\Components\Event as CalendarEvent;
-
 
 class InviteController extends Controller
 {
@@ -158,6 +159,13 @@ class InviteController extends Controller
 
         $invite->accepted = $request->accepted;
         $invite->save();
+
+        if ($invite->accepted)
+            $notification = new InviteAccepted($invite);
+        else
+            $notification = new InviteDeclined($invite);
+
+        $invite->event->user->notify($notification);
 
         return back();
     }
