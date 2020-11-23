@@ -33,8 +33,14 @@ task('build', function () {
 
 // Reload supervisor
 
-task('supervisor:reload', function () {
+task('supervisor', function () {
     run("cd {{release_path}} && supervisorctl reload");
+});
+
+// NPM run prod
+
+task('npm', function () {
+    run("cd {{release_path}} && npm ci && npm run prod");
 });
 
 // [Optional] if deploy fails automatically unlock.
