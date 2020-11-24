@@ -40,7 +40,7 @@ task('supervisor', function () {
 // NPM run prod
 
 task('npm', function () {
-    run("cd {{release_path}} && npm ci && npm run prod");
+    run("cd {{release_path}} && npm ci && npm run dev");
 });
 
 before('deploy:symlink', 'supervisor');
