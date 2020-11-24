@@ -4,7 +4,7 @@
       <div v-if="!$page.user" class="bg-indigo-100 border-t-2 border-indigo-500 rounded-b px-4 py-3 shadow-md" role="alert">
         <div class="flex">
           <p v-if="invite.contact.is_registered" class="text-sm">It looks like you have an account. <a class="underline" :href="route('login')">Login here</a> to see all your events and create your own.</p>
-          <p v-else class="text-sm">It looks like you don't have an account. <a class="underline" :href="route('login')">Register here</a> to see all your events and create your own.</p>
+          <p v-else class="text-sm">It looks like you don't have an account. <a class="underline" :href="route('register')">Register here</a> to see all your events and create your own.</p>
         </div>
       </div>
     </div>
