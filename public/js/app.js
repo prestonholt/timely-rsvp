@@ -31305,7 +31305,7 @@ var render = function() {
                                 "a",
                                 {
                                   staticClass: "underline",
-                                  attrs: { href: _vm.route("login") }
+                                  attrs: { href: _vm.route("register") }
                                 },
                                 [_vm._v("Register here")]
                               ),
