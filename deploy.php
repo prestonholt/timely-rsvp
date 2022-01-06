@@ -8,7 +8,7 @@ require 'recipe/laravel.php';
 set('application', 'timelyrsvp.com');
 
 // Project repository
-set('repository', 'git@github.com:prestonholt/TimelyRSVP.git');
+set('repository', 'git@github.com:prestonholt/timely-rsvp.git');
 
 // [Optional] Allocate tty for git clone. Default value is false.
 set('git_tty', true);
